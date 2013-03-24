@@ -131,7 +131,8 @@ void CholUpdateR1(arma::mat& L, arma::vec& v, bool downdate)
 		double s = v(k) / L(k,k);
 		L(k,k) = r;
 		if (k < L.n_rows-1) {
-			L(k,arma::span(k+1,L.n_rows-1)) += sign * s / c * v(arma::span(k+1,v.n_elem-1)).t();
+			L(k,arma::span(k+1,L.n_rows-1)) = (L(k,arma::span(k+1,L.n_rows-1)) +
+                                               sign * s * v(arma::span(k+1,v.n_elem-1)).t()) / c;
 			v(arma::span(k+1,v.n_elem-1)) = c * v(arma::span(k+1,v.n_elem-1)) -
 			s * L(k,arma::span(k+1,L.n_rows-1)).t();
 		}
