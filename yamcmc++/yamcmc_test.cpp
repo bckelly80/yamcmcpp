@@ -27,7 +27,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include "mymcmc.hpp"
+#include "samplers.hpp"
 
 // Externally-defined random number generator object, instantiated in random.cpp
 extern boost::random::mt19937 rng;

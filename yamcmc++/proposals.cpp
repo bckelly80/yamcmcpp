@@ -6,7 +6,14 @@
 //  Copyright (c) 2013 Brandon Kelly. All rights reserved.
 //
 
+// Local include
 #include "proposals.hpp"
+
+// Global random number generator object, instantiated in random.cpp
+extern boost::random::mt19937 rng;
+
+// Object containing some common random number generators.
+RandomGenerator RandGen;
 
 // Method of NormalProposal class to generate a normally-distributed
 // proposal, centered at starting_value.

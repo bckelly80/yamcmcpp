@@ -10,6 +10,15 @@
 #define __yamcmc____proposals__
 
 #include <iostream>
+// Local includes
+#include "random.hpp"
+#include "steps.hpp"
+
+// Global random number generator object, instantiated in random.cpp
+extern boost::random::mt19937 rng;
+
+// Object containing some common random number generators.
+RandomGenerator RandGen;
 
 /*! \defgroup proposals Metropolis-Hastings Proposals
  *
@@ -156,7 +165,7 @@ class EnsembleProposal: public Proposal<ProposalType> {
 public:
     // Constructor
 	EnsembleProposal(Ensemble<ParameterType>& ensemble, int parameter_index) :
-    ensemble_(ensemble), parameter_index_(parameter_index) {}
+    ensemble_(ensemble), parameter_index_(parameter_index_) {}
 	
 	// Return a parameter object from the complementary ensemble
 	virtual ProposalType GrabParameter() = 0;

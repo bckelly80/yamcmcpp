@@ -6,18 +6,7 @@
 //  Copyright (c) 2013 Brandon Kelly. All rights reserved.
 //
 
-#include "steps.hpp"
-/*
- *  steps.cpp
- *  mymcmc
- *
- *  Created by Brandon Kelly on 11/24/12.
- *  Copyright 2012 __MyCompanyName__. All rights reserved.
- *
- */
-
 #include <boost/timer.hpp>
-
 // Local includes
 #include "steps.hpp"
 
