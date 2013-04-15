@@ -30,7 +30,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		DF72E5B2171C9BCE008EFBBF /* priors.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = priors.hpp; sourceTree = "<group>"; };
+		DF72E5B3171CBE07008EFBBF /* parameters.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = parameters.hpp; sourceTree = "<group>"; };
 		DFAD64CD16E26FA100B83426 /* yamcmc++ */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "yamcmc++"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DFAD64D016E26FA100B83426 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		DFAD64D216E26FA100B83426 /* yamcmc__.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = yamcmc__.1; sourceTree = "<group>"; };
@@ -80,13 +80,13 @@
 				DFAD64D916E2709300B83426 /* proposals.cpp */,
 				DFAD64DA16E2709300B83426 /* proposals.hpp */,
 				DFAD64DC16E270E500B83426 /* random.cpp */,
-				DF72E5B2171C9BCE008EFBBF /* priors.hpp */,
 				DFAD64DD16E270E500B83426 /* random.hpp */,
 				DFAD64DF16E2718700B83426 /* samplers.cpp */,
 				DFAD64E016E2718700B83426 /* samplers.hpp */,
 				DFAD64E216E271CA00B83426 /* steps.cpp */,
 				DFAD64E316E271CA00B83426 /* steps.hpp */,
 				DFAD64E516E2725900B83426 /* yamcmc_test.cpp */,
+				DF72E5B3171CBE07008EFBBF /* parameters.hpp */,
 			);
 			name = src;
 			path = "yamcmc++";
@@ -219,7 +219,11 @@
 			buildSettings = {
 				"HEADER_SEARCH_PATHS[arch=*]" = /usr/local/include;
 				"LIBRARY_SEARCH_PATHS[arch=*]" = /usr/local/lib;
-				"OTHER_LDFLAGS[arch=*]" = "-larmadillo";
+				"OTHER_LDFLAGS[arch=*]" = (
+					"-lboost_filesystem",
+					"-larmadillo",
+					"-lboost_system",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;

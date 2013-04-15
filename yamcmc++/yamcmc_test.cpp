@@ -120,19 +120,6 @@ void test_mcmc();
 void test_random();
 void test_adaptive_mha();
 
-//
-// Main routine
-//
-
-int main (int argc, char* const argv[]) {
-	
-    //	test_adaptive_mha();
-    //	test_random();
-	test_mcmc();
-	
-	return 0;
-}
-
 // Function to test the random number generators
 
 void test_random() {

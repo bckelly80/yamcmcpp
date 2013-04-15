@@ -42,7 +42,7 @@
 // random.cpp for more details.
 class RandomGenerator {
 public:
-    void SetSeed(unsigned int seed) const; // Set the random number generator seed. Be Careful with this!
+    void SetSeed(unsigned long seed) const; // Set the random number generator seed. Be Careful with this!
     void SaveSeed(std::string seed_filename = "seed.txt") const; // Save the random number generator seed to a file.
 	void RecoverSeed(std::string seed_filename = "seed.txt") const;
     double exp(double lambda=1.0);

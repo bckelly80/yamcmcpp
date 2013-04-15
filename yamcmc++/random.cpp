@@ -30,7 +30,7 @@ boost::random::mt19937 rng;
 
 
 // Method to set the seed of the global random number generator.
-void RandomGenerator::SetSeed(unsigned int seed) const
+void RandomGenerator::SetSeed(unsigned long seed) const
 {
     rng.seed(seed);
 }

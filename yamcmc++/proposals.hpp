@@ -12,13 +12,13 @@
 #include <iostream>
 // Local includes
 #include "random.hpp"
-#include "steps.hpp"
+#include "parameters.hpp"
 
 // Global random number generator object, instantiated in random.cpp
 extern boost::random::mt19937 rng;
 
 // Object containing some common random number generators.
-RandomGenerator RandGen;
+extern RandomGenerator RandGen;
 
 /*! \defgroup proposals Metropolis-Hastings Proposals
  *
@@ -142,7 +142,7 @@ public:
 	 */
 	double LogDensity(double new_value, double starting_value) {
 		double log_starting_value = log(starting_value);
-		double log_new_value = log_new_value;
+		double log_new_value = log(new_value);
 		double chi = (log_new_value - log_starting_value) / logsd_;
 		double logdens = -1.0 * log_new_value - 0.5 * chi * chi;
 		return logdens;
@@ -165,7 +165,7 @@ class EnsembleProposal: public Proposal<ProposalType> {
 public:
     // Constructor
 	EnsembleProposal(Ensemble<ParameterType>& ensemble, int parameter_index) :
-    ensemble_(ensemble), parameter_index_(parameter_index_) {}
+    ensemble_(ensemble), parameter_index_(parameter_index) {}
 	
 	// Return a parameter object from the complementary ensemble
 	virtual ProposalType GrabParameter() = 0;

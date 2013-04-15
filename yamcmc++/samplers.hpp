@@ -1,18 +1,6 @@
-//
-//  samplers.h
-//  yamcmc++
-//
-//  Created by Brandon Kelly on 3/2/13.
-//  Copyright (c) 2013 Brandon Kelly. All rights reserved.
-//
-
-#ifndef __yamcmc____samplers__
-#define __yamcmc____samplers__
-
-#include <iostream>
 /*
- *  mymcmc.hpp
- *  mymcmc
+ *  samplers.hpp
+ *  yamcmc++
  *
  *  Created on 11/18/12 by
  *
@@ -32,8 +20,9 @@
  *	libraries. In addition, I have introduced a multivariate Metropolis
  *	step that updates a vector of parameters.
  */
-#ifndef __MY_MCMC__
-#define __MY_MCMC__
+
+#ifndef __yamcmc____samplers__
+#define __yamcmc____samplers__
 
 // Standard includes
 #include <iostream>
@@ -152,7 +141,5 @@ public:
 	// Method to print out the parameter values to a files
     void SaveValues(std::ofstream& outfile);
 };
-
-#endif
 
 #endif /* defined(__yamcmc____samplers__) */

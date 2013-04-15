@@ -13,7 +13,7 @@
 extern boost::random::mt19937 rng;
 
 // Object containing some common random number generators.
-RandomGenerator RandGen;
+extern RandomGenerator RandGen;
 
 // Method of NormalProposal class to generate a normally-distributed
 // proposal, centered at starting_value.

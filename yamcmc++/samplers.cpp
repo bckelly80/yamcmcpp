@@ -1,15 +1,6 @@
-//
-//  samplers.cpp
-//  yamcmc++
-//
-//  Created by Brandon Kelly on 3/2/13.
-//  Copyright (c) 2013 Brandon Kelly. All rights reserved.
-//
-
-#include "samplers.hpp"
 /*
- *  mymcmc.cpp
- *  mymcmc
+ *  samplers.cpp
+ *  yamcmc++
  *
  *  Created on 11/18/12 by
  *
