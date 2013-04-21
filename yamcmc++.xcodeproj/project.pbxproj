@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		DFAD64D116E26FA100B83426 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFAD64D016E26FA100B83426 /* main.cpp */; };
 		DFAD64D316E26FA100B83426 /* yamcmc__.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = DFAD64D216E26FA100B83426 /* yamcmc__.1 */; };
 		DFAD64DB16E2709300B83426 /* proposals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFAD64D916E2709300B83426 /* proposals.cpp */; };
 		DFAD64DE16E270E500B83426 /* random.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFAD64DC16E270E500B83426 /* random.cpp */; };
@@ -32,7 +31,6 @@
 /* Begin PBXFileReference section */
 		DF72E5B3171CBE07008EFBBF /* parameters.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = parameters.hpp; sourceTree = "<group>"; };
 		DFAD64CD16E26FA100B83426 /* yamcmc++ */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "yamcmc++"; sourceTree = BUILT_PRODUCTS_DIR; };
-		DFAD64D016E26FA100B83426 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		DFAD64D216E26FA100B83426 /* yamcmc__.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = yamcmc__.1; sourceTree = "<group>"; };
 		DFAD64D916E2709300B83426 /* proposals.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = proposals.cpp; sourceTree = "<group>"; };
 		DFAD64DA16E2709300B83426 /* proposals.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = proposals.hpp; sourceTree = "<group>"; };
@@ -75,7 +73,6 @@
 		DFAD64CF16E26FA100B83426 /* src */ = {
 			isa = PBXGroup;
 			children = (
-				DFAD64D016E26FA100B83426 /* main.cpp */,
 				DFAD64D216E26FA100B83426 /* yamcmc__.1 */,
 				DFAD64D916E2709300B83426 /* proposals.cpp */,
 				DFAD64DA16E2709300B83426 /* proposals.hpp */,
@@ -143,7 +140,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DFAD64D116E26FA100B83426 /* main.cpp in Sources */,
 				DFAD64DB16E2709300B83426 /* proposals.cpp in Sources */,
 				DFAD64DE16E270E500B83426 /* random.cpp in Sources */,
 				DFAD64E116E2718700B83426 /* samplers.cpp in Sources */,

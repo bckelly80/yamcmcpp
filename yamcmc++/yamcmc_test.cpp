@@ -120,6 +120,13 @@ void test_mcmc();
 void test_random();
 void test_adaptive_mha();
 
+int main(int argc, const char * argv[])
+{
+    // Run some tests...
+    test_mcmc();
+    return 0;
+}
+
 // Function to test the random number generators
 
 void test_random() {
@@ -144,8 +151,27 @@ void test_random() {
 void test_mcmc () {
 	
 	// First find out which directory we are in
-	std::string idirectory = get_initial_directory();
+	//std::string idirectory = get_initial_directory();
+    std::string idirectory = "./";
     std::cout << idirectory << std::endl;
+    
+    // Generate fake data
+    double true_mean = 3.4;
+    double true_var = 2.3;
+    
+    int nsample = 1000;
+    double* simulated_data;
+    simulated_data = new double [nsample];
+    
+    for (int i=0; i<nsample; i++) {
+        simulated_data[i] = RandGen.normal(true_mean, sqrt(true_var));
+    }
+    
+    // Save simulated data to file
+    std::ofstream outfile("normal.dat");
+    for (int i=0; i<nsample; i++) {
+        outfile << simulated_data[i];
+    }
     
 	// Prompt user for MCMC parameters
 	MCMCOptions mcmc_options = mcmc_options_prompt(idirectory);
@@ -161,7 +187,6 @@ void test_mcmc () {
     // NormalVariance.SetMeanPointer(&NormalMean);
     
 	// Grab Data
-	int nsample = 1000;
 	double* data;
 	data = new double [nsample];
 	
