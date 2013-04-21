@@ -17,8 +17,8 @@
  *	I have adopted most of the classes and functions from Scythe MCMC, but
  *  have modified them to remove the dependency on the Scythe Statistical
  *  library. My set of MCMC classes and functions depends on the BOOST
- *	libraries. In addition, I have introduced a multivariate Metropolis
- *	step that updates a vector of parameters.
+ *	libraries. In addition, I have made considerable additions ands extensions
+ *  to the Scythe MCMC classes.
  */
 
 #ifndef __yamcmc____samplers__
@@ -41,11 +41,8 @@
 #include "random.hpp"
 #include "steps.hpp"
 
-/*! \brief Basic MCMC options.
- *
- * These options are generally specified at the command line and are generic to all
- * MCMC samplers.  Other options are passed through an .ini config file.
- */
+// Basic MCMC options. These options are generally specified at the command line and are generic to all
+// MCMC samplers.
 struct MCMCOptions {
 	/// Sample size. (iterations - burnin)/(thin + 1).
 	int sample_size;
@@ -82,15 +79,10 @@ bool read_from_file(std::string filename);
 // Function to test if two doubles are within the machine precision of each other.
 bool approx_equal(double a, double b);
 
-/*! MCMC sampler.
- *
- *  The sampler is the main MCMC object that holds all the MCMC steps for each parameter.  Running the sampler
- *  performs MCMC sampling for the model, saving results, and displaying progress.  In the language of the Command Pattern, the
- *  sampler is the Invoker or Command Manager.
- *
- *  After instantiating the sampler, users should add all the required steps using the Sampler::AddStep method, which places
- *  each step onto a stack. The entire sampling process is run using Sampler::Run.
- */
+// MCMC sampler. The sampler is the main MCMC object that holds all the MCMC steps for each parameter.  Running the sampler
+// performs MCMC sampling for the model, saving results, and displaying progress. After instantiating the sampler, users
+// should add all the required steps using the Sampler::AddStep method, which places each step onto a stack. The entire
+// sampling process is run using Sampler::Run.
 class Sampler {
 public:
     // Constructor to initialize sampler. Takes a MCMCOptions struct as input.

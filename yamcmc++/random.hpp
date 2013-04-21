@@ -12,7 +12,7 @@
 #include <iostream>
 //
 //  random.hpp
-//  mymcmc
+//  yamcmc++
 //
 //  Created by Dr. Brandon C. Kelly on 11/21/12.
 //

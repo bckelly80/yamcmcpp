@@ -20,17 +20,6 @@ extern boost::random::mt19937 rng;
 // Object containing some common random number generators.
 extern RandomGenerator RandGen;
 
-/*! \defgroup proposals Metropolis-Hastings Proposals
- *
- * The MetropStep Metropolis-Hastings class requires both a Parameter instance
- * and a Proposal instance.  Proposal instances define a Draw and LogDensity method.
- * The constructor should set a tuning parameter.
- *
- * MetroStep::DoStep uses the Draw method to draw new proposed values for the parameter
- * and the LogDensity to calculate the proposal terms in the acceptance \f$\alpha\f$.  For
- * symmetric proposal distributions returning 0.0 is enough.
- */
-
 // Abstract proposal class for Metropolis-Hastings sampler.
 template <typename ProposalType>
 class Proposal {
@@ -107,39 +96,21 @@ private:
 };
 
 
-/*! \brief Log normal proposal for Metropolis-Hastings.
- *
- * \ingroup proposals
- *
- * Useful proposal type for parameters with support between 0 and positive infinity.
- *
- * For convenience, the log normal proposal is parameterized using the unlogged mean (starting value)
- * and the (positive) log standard deviation.  This differs from how scythe::dlnorm is parameterized.
- *
- */
+//Log normal proposal for Metropolis-Hastings.
 class LogNormalProposal : public Proposal<double> {
 public:
-    /*! \brief Empy constructor */
+    // Empy constructor
 	LogNormalProposal() {}
-	/*! \brief Main constructor
-	 *
-	 * Scale of steps are standard deviation of the logged parameter value:
-	 *
-	 * \param logsd Tuning parameter equal to the log standard deviation.
-	 */
+    
+	// Main constructor. Scale of steps are standard deviation of the logged parameter value:
+    // logsd: Tuning parameter equal to the log standard deviation.
 	LogNormalProposal(double logsd) : logsd_(logsd) {}
 	
-	/*! \brief Draw from log normal proposal
-	 *
-	 * \param starting_value Starting value (unlogged mean of log normal).
-	 */
+	// Draw from log normal proposal
+    // starting_value: Starting value (unlogged mean of log normal).
 	double Draw(double starting_value);
 	
-	/*! \brief Log probability of proposal new value, given starting value.
-	 *
-	 * \param starting_value Starting value.
-	 * \param new_value Proposed new value.
-	 */
+	// Log probability of proposal new value, given starting value.
 	double LogDensity(double new_value, double starting_value) {
 		double log_starting_value = log(starting_value);
 		double log_new_value = log(new_value);

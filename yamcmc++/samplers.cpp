@@ -9,17 +9,6 @@
  *     University of California, Santa Barbara
  *     (bckelly80@gmail.com)
  *
- *  Routines to perform Markov Chain Monte Carlo (MCMC) adopted from
- *
- *  	Scythe MCMC - A Scythe Markov Chain Monte Carlo C++ Framework
- *		by Tristan Zajonc (tristanz@gmail.com)
- *
- *	I have adopted most of the classes and functions from Scythe MCMC, but
- *  have modified them to remove the dependency on the Scythe Statistical
- *  library. My set of MCMC classes and functions depends on the BOOST
- *	libraries. In addition, I have introduced:
- *      - A multivariate Metropolis step that updates a vector of parameters
- *      - Routines to prompt the user for the MCMC options from the command line
  */
 
 // local includes
@@ -44,12 +33,9 @@ Sampler::Sampler(MCMCOptions& options) {
 	out_file_ = options.out_file;
 }
 
-/*! \brief Add Step to Sampler execution stack.
- *
- *  All parameters should have an associated Step that is added to the sampler.  The sampler stack
- *  defines one sampler iteration.
- *  \param step Step object for a given parameter.
- */
+// Add Step to Sampler execution stack. All parameters should have an associated Step that is added to the sampler.
+// The sampler stack defines one sampler iteration.
+// step: Step object for a given parameter.
 void Sampler::AddStep(Step* step) {
 	// Add step to step stack.
 	steps_.push_back(step);
@@ -59,11 +45,9 @@ void Sampler::AddStep(Step* step) {
 	}
 }
 
-/*! \brief Run sampler for a specific number of iterations.
- *
- * \param number_of_iterations Number of iterations to run sampler.
- * \param progress Display a progress bar.
- */
+// Run sampler for a specific number of iterations.
+// number_of_iterations: Number of iterations to run sampler.
+// progress: Display a progress bar.
 void Sampler::Iterate(int number_of_iterations, bool progress) {
 	if(progress) {
 		boost::progress_display show_progress(number_of_iterations);
@@ -83,11 +67,7 @@ void Sampler::Iterate(int number_of_iterations, bool progress) {
 	}
 }
 
-/*! \brief Run sampler.
- *
- * Run the MCMC sampling procedure, including burning in, sampling, thinning, displaying progress,
- * and saving results.
- */
+//Run the MCMC sampling procedure, including burning in, sampling, thinning, displaying progress, and saving results.
 void Sampler::Run() {
 	// Timer
 	boost::timer timer;

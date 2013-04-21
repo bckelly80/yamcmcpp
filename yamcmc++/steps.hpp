@@ -26,34 +26,6 @@ extern boost::random::mt19937 rng;
 // instantiated in steps.cpp
 extern RandomGenerator RandGen;
 
-/*! \brief Abstract parameter class.
- *
- * The model is defined as many instances of parameter subclasses.  Different Step types require different methods
- * to be implemented in each Parameter subclass.
- *
- * \section overwrite Methods that should be implemented in subclass:
- * Required for all step types:
- *   - Constructor that sets, at least, Parameter::track_ and Parameter::name_
- *   - Parameter::Value
- *   - Parameter::Save
- *
- * GibbsStep:
- *   - Parameter::StartingValue
- *   - Parameter::RandomPosterior
- *
- * Metropolis-Hastings:
- *   - Parameter::StartingValue
- *   - Parameter::LogDensity
- *
- * Slice:
- *   - Parameter::StartingValue
- *   - Parameter::LogDensity
- *
- * FunctionStep (deterministic):
- *   - Parameter::Function
- *
- */
-
 ////////// FUNCTION DEFINITIONS AND TEMPLATE FUNCTIONS /////////////
 
 // Method to perform the rank-1 Cholesky update, needed for updating the
@@ -69,41 +41,18 @@ std::string to_string (const T& t) {
 	return s;
 }
 
-/*! \defgroup steps Implemented MCMC Step Types
- *
- * MCMC algorithms typically consist of many steps.  While users will often want
- * to implement their own step types, a few that arise over and over are included here.
- * MetropStep and SliceStep in particular only require specification of
- * a log density function (minus an unknown constant).
- *
- */
+/////////////////////////////////////////////////////////////////////
 
-/*! \brief Abstract base step class.
- *
- * \ingroup steps
- *
- * The step (Gibbs, Metropolis-Hastings, Slice, etc) describes how the sampler
- * calculates the next value of each parameter.
- */
-
+// Abstract base step class. Executes the main step function, such as taking a MH step or deterministic step.
+// The Step class will never be instantiated directly.
 class Step {
 public:
-	/*! \brief Take step.
-	 *
-	 * Executes the main step function, such as taking a MH step or deterministic step.
-	 */
 	virtual void DoStep() = 0;
-	/*! \brief Set starting value.
-	 *
-	 *  Calls the parameter's Parameter::Starting function and then saves the result using Parameter::Save.
-	 */
+	// Set starting value for the parameter associated with a step instance. Should call the parameter's
+    // Parameter::Starting function and then saves the result using Parameter::Save.
 	virtual void Start() = 0;
 	
-	/*! \brief Return parameter label
-	 *
-	 * \return The label of the parameter associated with the step instance.
-	 * \see Parameter::Label
-	 */
+	// Should return the label of the parameter associated with the step instance.
 	virtual std::string ParameterLabel() {
 		return " ";
 	}
@@ -112,38 +61,27 @@ public:
 	virtual std::string ParameterValue() {
 		return " ";
 	}
-	/*! Return the tracking status
-	 *
-	 * \return The tracking status of the parameter associated with the step instance.
-	 * \see Parameter::Track
-	 */
+	// Should return the tracking status of the parameter associated with this step instance.
 	virtual bool ParameterTrack() {
 		return true;
 	}
 };
 
-/*! \brief Gibbs step.
- *
- * \ingroup steps
- *
- * A Gibbs step draws from the Parameter::RandomPosterior function of a Parameter and then saves the result
- * using Parameter:Save.
- */
+
+// A Gibbs step draws from the Parameter::RandomPosterior function of a Parameter and then saves the result
+// using Parameter:Save.
 template <class ParValueType>
 class GibbsStep: public Step {
 public:
 	/// Default constructor, for copy assignments, etc.
 	GibbsStep() {}
-	/*! \brief Main constructor taking a pointer to a Parameter object.
-	 *  \param parameter A Parameter that implements Parameter::RandomPosterior.
-	 */
+    
+	// Main constructor taking a pointer to a Parameter object.
+    // parameter: A Parameter that implements Parameter::RandomPosterior.
 	GibbsStep(Parameter<ParValueType>& parameter) : parameter_(parameter) {}
 	
-	/*! \brief Take a Gibbs step for the parameter.
-	 *
-	 *  Draws from the parameter's Parameter::RandomPosterior function and then
-	 *	saves the result using Parameter::Save.
-	 */
+	// Method to take a Gibbs step for the parameter. Draws from the parameter's Parameter::RandomPosterior function
+    // and then saves the result using Parameter::Save.
 	void DoStep() {
 		parameter_.Save(parameter_.RandomPosterior());
 	}
@@ -180,7 +118,7 @@ private:
 template <class ParValueType>
 class MetropStep: public Step {
 public:
-	// \brief Main constructor taking a reference to a Parameter and Proposal object.
+	// Main constructor taking a reference to a Parameter and Proposal object.
 	MetropStep(Parameter<ParValueType>& parameter, Proposal<ParValueType>& proposal,
 			   int report_iter=-1) :
 	parameter_(parameter), proposal_(proposal), report_iter_(report_iter)
@@ -197,11 +135,12 @@ public:
 		return parameter_.Label();
 	}
 	
-	// Return string representation of parameter value
 	std::string ParameterValue() {
 		return parameter_.StringValue();
 	}
 	
+    // Method to perform the accept/reject part of the Metropolis-Hastings step. Returns a boolean indicating whether
+    // the proposal was acceptec (True) or rejected (False).
 	bool Accept(ParValueType new_value, ParValueType old_value) {
 		// MH accept/reject criteria
 		double alpha_ = parameter_.LogDensity(new_value) - parameter_.GetLogDensity()
@@ -240,7 +179,7 @@ public:
 			Report();
 		}
 	}
-    
+
 	// Report on acceptance rates since last report
 	void Report() {
 		double arate = ((double)(naccept_)) / ((double)(niter_));
@@ -265,7 +204,7 @@ private:
 	int report_iter_; // The number of iterations until we print out the average acceptance rate
 };
 
-// Robust Adaptive Multivariate Normal proposal for Metropolis-Hastings (RAM).
+// Robust Adaptive Multivariate proposal for Metropolis-Hastings (RAM).
 //
 // Reference: Robust Adaptive Metropolis Algorithm with Coerced Acceptance Rate,
 //			  M. Vihola, 2012, Statistics & Computing, 22, 997-1008
@@ -285,7 +224,6 @@ public:
 		return parameter_.Label();
 	}
 	
-	// Return string representation of parameter value
 	std::string ParameterValue() {
 		return parameter_.StringValue();
 	}

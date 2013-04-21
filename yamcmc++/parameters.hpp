@@ -29,35 +29,27 @@ extern RandomGenerator RandGen;
  *****************************************************************/
 
 // This is the base Parameter class. It is abstract, so it should
-// never be instantiated.
+// never be instantiated directly. Instead, users must subclass it when
+// building their own parameter classes.
 
 template<class ParValueType>
 class Parameter {
 public:
 	/// Default class constructor.
 	Parameter() {}
-	/*! \brief Base class constructor
-	 *
-	 * \param track True if parameter should be tracked and saved.
-	 * \param label Label of parameter for tracking purposes.
-	 */
+    
+    // track: True if parameter should be tracked and saved.
+    // label: Label of parameter for tracking purposes.
+    // temperature: Temperature of parameter object. This is used by ensemble samplers. If you don't
+    //              know what this is just keep it at the default of 1.0.
 	Parameter(bool track, std::string label, double temperature=1.0) : track_(track), label_(label),
     temperature_(temperature) {}
 	
-	/// Function for deterministic nodes.
-	/// \return Function value.
-	virtual ParValueType Function() {
-        ParValueType p;
-        return p;
-    }
-	
-	/// Starting value.
-	/// \return Starting value.
+	// Method to return the starting value for the parameter.
 	virtual ParValueType StartingValue() = 0;
 	
-	/// Log of the probability density (plus constant)
-	/// \param value Value of parameter to evaluate density at.
-	/// \return Log of probability density (plus constant)
+	// Method to return the log of the probability density (plus constant).
+	// value: Value of parameter to evaluate density at.
 	virtual double LogDensity(ParValueType value) {
 		return 0.0;
     }
@@ -80,40 +72,36 @@ public:
         return temperature_;
     }
     
-	/// Return a random draw from the posterior.
-	/// Random draw from posterior is called by GibbsStep.
-	/// \return Random draw from posterior.
+	// Return a random draw from the posterior.
+	// Random draw from posterior is called by GibbsStep.
 	virtual ParValueType RandomPosterior() {
         ParValueType p;
 		return p;
 	}
 	
-	/// Value of parameter.
-	/// \return Parameter value
+	// Return the current value of the parameter.
 	virtual ParValueType Value() = 0;
 	
-	// Return a string representation of parameter value
+	// Return a string representation of the parameter value.
 	virtual std::string StringValue() {
 		return " ";
 	}
 	
-	/// Save a new value of the parameter.
-	/// \param new_value New value to save.
+	// Save a new value of the parameter.
+	// new_value: New value to save.
 	virtual void Save(ParValueType new_value) = 0;
 	
-	/// Parameter is tracked / saved.
-	/// \return True if parameter is tracked.
+	// Parameter is tracked / saved. Return True if parameter is tracked.
 	bool Track() {
 		return track_;
 	}
 	
-    // Set whether a parameter is tracked or not
+    // Set whether a parameter is tracked or not.
     void SetTracking(bool track) {
         track_ = track;
     }
     
-	/// String label of parameter.
-	/// \return Label of parameter, for purposes of saving output.
+	// Return the a string containing the parameter label. This is used to identify the parameter.
 	std::string Label() {
 		return label_;
 	}

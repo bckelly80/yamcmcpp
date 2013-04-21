@@ -2,15 +2,6 @@
 //  random.cpp
 //  yamcmc++
 //
-//  Created by Brandon Kelly on 3/2/13.
-//  Copyright (c) 2013 Brandon Kelly. All rights reserved.
-//
-
-#include "random.hpp"
-//
-//  random.cpp
-//  mymcmc
-//
 //  Created by Dr. Brandon C. Kelly on 11/21/12.
 //  Source file for a class that generates pseudorandom numbers from common distributions.
 //  This is basically a wrapper for BOOST::RANDOM
