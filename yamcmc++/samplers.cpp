@@ -122,7 +122,7 @@ void Sampler::Run() {
 	std::cout << "Total elapsed time: " << timer.elapsed() << " seconds" << std::endl;
 }
 
-// Method to the current values of the parameters to a file.
+// Method to save the current values of the parameters to a file.
 void Sampler::SaveValues(std::ofstream& outfile)
 {
     for (int k = 0; k < tracks_.size(); ++k) {

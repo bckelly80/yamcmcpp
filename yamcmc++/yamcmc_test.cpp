@@ -48,8 +48,6 @@ public:
 	Mu(bool track, std::string name) : Parameter<double>(track, name) {}
 	double RandomPosterior();
 	double StartingValue();
-	double Value();
-	void Save(double new_mu);
 	double LogDensity(double mu_value);
 	// Prior is normal
 	void SetPrior(double prior_mean, double prior_var);
@@ -72,8 +70,6 @@ public:
 	SigmaSqr(bool track, std::string name) : Parameter<double>(track, name) {}
 	double RandomPosterior();
 	double StartingValue();
-	double Value();
-	void Save(double new_sigsqr);
 	double LogDensity(double sigsqr_value);
 	// Prior is inverse-gamma
 	void SetPrior(double alpha, double beta);
@@ -94,11 +90,9 @@ public:
 	Theta() : Parameter<arma::vec>() {}
 	Theta(bool track, std::string name) : Parameter<arma::vec>(track, name) {}
 	arma::vec StartingValue();
-	arma::vec Value();
 	std::string StringValue();
-	void Save(arma::vec new_theta);
 	double LogDensity(arma::vec theta_value);
-	// Prior is independent for theta = (mu,sigsqr). Prior for mu is
+ 	// Prior is independent for theta = (mu,sigsqr). Prior for mu is
 	// normal, while prior for sigsqr is inverse-gamma
 	void SetPrior(double prior_mean, double prior_var, double alpha, double beta);
 	void SetData(double* data, int ndata);
@@ -107,6 +101,7 @@ private:
 	// Prior parameters
 	double prior_mean_;
 	double prior_var_;
+    double log_density_;
 	double alpha_;
 	double beta_;
 	double* data_; // Pointer to data array
@@ -170,7 +165,7 @@ void test_mcmc () {
     // Save simulated data to file
     std::ofstream outfile("normal.dat");
     for (int i=0; i<nsample; i++) {
-        outfile << simulated_data[i];
+        outfile << simulated_data[i] << std::endl;
     }
     
 	// Prompt user for MCMC parameters
@@ -194,8 +189,8 @@ void test_mcmc () {
 	for (int i=0; i<nsample; i++) {
 		datafile >> data[i];
 	}
-	
-	NormalTheta.SetData(data, nsample);
+    
+	NormalTheta.SetData(simulated_data, nsample);
 	// NormalMean.SetData(data, nsample);
 	// NormalVariance.SetData(data, nsample);
     
@@ -211,13 +206,9 @@ void test_mcmc () {
     
 	// Instantiate Metropolis-Hastings proposal objects
 	
-	arma::mat prop_covar;
-	prop_covar << 6.262e-3 << -4.228e-5 << arma::endr
-    << -4.228e-5 << 8.619e-2 << arma::endr;
-	
-	prop_covar.print("Posterior covariance: ");
-	
+	arma::mat prop_covar(2,2);
 	prop_covar.eye();
+    prop_covar = prop_covar * 1e-2;
 	
 	NormalProposal ThetaProp(1.0);
     
@@ -267,18 +258,6 @@ double Mu::StartingValue()
 {
 	double data_mean = mean(data_, ndata_);
 	return data_mean;
-}
-
-// Method to return the current value of the parameter mu
-double Mu::Value()
-{
-	return mu_;
-}
-
-// Method to update the current value of the parameter mu
-void Mu::Save(double new_mu)
-{
-	mu_ = new_mu;
 }
 
 // Method to calculate the log-posterior given some value of mu
@@ -343,18 +322,6 @@ double SigmaSqr::StartingValue()
 {
 	double sigsqr = variance(data_, ndata_);
 	return sigsqr;
-}
-
-// Method to return the current value of the parameter SigmaSqr
-double SigmaSqr::Value()
-{
-	return var_;
-}
-
-// Method to update the current value of the parameter mu
-void SigmaSqr::Save(double new_sigsqr)
-{
-	var_ = new_sigsqr;
 }
 
 // Method to calculate the log-posterior given some value of mu
@@ -433,25 +400,13 @@ arma::vec Theta::StartingValue()
 	return itheta;
 }
 
-// Method to return the current value of the parameter theta
-arma::vec Theta::Value()
-{
-	return theta_;
-}
-
 // Method to return a string representation of the parameter vector theta
 std::string Theta::StringValue()
 {
 	std::stringstream ss;
-	(theta_.t()).raw_print(ss);
+	(value_.t()).raw_print(ss);
 	std::string theta_str = ss.str();
 	return theta_str;
-}
-
-// Method to update the current value of the parameter mu
-void Theta::Save(arma::vec new_theta)
-{
-	theta_ = new_theta;
 }
 
 // Method to calculate the log-posterior given some value of mu

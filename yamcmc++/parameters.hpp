@@ -58,7 +58,7 @@ public:
 	// Metropolis steps so we don't have to compute the log-posterior
 	// for the current value of the parameter more than once
 	virtual double GetLogDensity() {
-		return 0.0;
+		return log_posterior_;
 	}
 	
     // Method to directly set the log-posterior of the parameter. Useful for certain steps
@@ -80,7 +80,9 @@ public:
 	}
 	
 	// Return the current value of the parameter.
-	virtual ParValueType Value() = 0;
+	ParValueType Value() {
+        return value_;
+    }
 	
 	// Return a string representation of the parameter value.
 	virtual std::string StringValue() {
@@ -89,7 +91,10 @@ public:
 	
 	// Save a new value of the parameter.
 	// new_value: New value to save.
-	virtual void Save(ParValueType new_value) = 0;
+	void Save(ParValueType new_value) {
+        value_ = new_value;
+        log_posterior_ = LogDensity(new_value);
+    }
 	
 	// Parameter is tracked / saved. Return True if parameter is tracked.
 	bool Track() {
@@ -108,7 +113,7 @@ public:
     
 protected:
     double log_posterior_; // The log of the posterior distribution
-    
+    ParValueType value_; // The current value of the parameter
     // Temperature value, used when doing tempered steps. By default this is one.
     double temperature_;
     
