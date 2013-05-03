@@ -36,6 +36,7 @@
 /* Begin PBXFileReference section */
 		554D041B173443AB00641704 /* libyamcmcpp.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libyamcmcpp.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		554D041F1734465400641704 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		554D04261734676700641704 /* yamcmc++.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = "yamcmc++.hpp"; sourceTree = "<group>"; };
 		DF72E5B3171CBE07008EFBBF /* parameters.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = parameters.hpp; sourceTree = "<group>"; };
 		DFAD64CD16E26FA100B83426 /* yamcmc++ */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "yamcmc++"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DFAD64D216E26FA100B83426 /* yamcmc__.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = yamcmc__.1; sourceTree = "<group>"; };
@@ -101,6 +102,7 @@
 				DFAD64E316E271CA00B83426 /* steps.hpp */,
 				DFAD64E516E2725900B83426 /* yamcmc_test.cpp */,
 				DF72E5B3171CBE07008EFBBF /* parameters.hpp */,
+				554D04261734676700641704 /* yamcmc++.hpp */,
 			);
 			name = src;
 			path = "yamcmc++";
