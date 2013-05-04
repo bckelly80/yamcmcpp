@@ -289,8 +289,15 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				"HEADER_SEARCH_PATHS[arch=*]" = /usr/local/include;
+				"LIBRARY_SEARCH_PATHS[arch=*]" = /usr/local/lib;
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
+				"OTHER_LDFLAGS[arch=*]" = (
+					"-lboost_filesystem",
+					"-armadillo",
+					"-lboost_system",
+				);
 				SDKROOT = macosx;
 			};
 			name = Release;
@@ -333,6 +340,7 @@
 				554D041D173443AB00641704 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		DFAD64C816E26FA100B83426 /* Build configuration list for PBXProject "yamcmc++" */ = {
 			isa = XCConfigurationList;
