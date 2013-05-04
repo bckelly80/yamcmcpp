@@ -57,7 +57,7 @@ public:
 	// Return the current value of the log-posterior. Useful for
 	// Metropolis steps so we don't have to compute the log-posterior
 	// for the current value of the parameter more than once
-	virtual double GetLogDensity() {
+	double GetLogDensity() {
 		return log_posterior_;
 	}
 	
@@ -91,9 +91,9 @@ public:
 	
 	// Save a new value of the parameter.
 	// new_value: New value to save.
-	void Save(ParValueType new_value) {
+	virtual void Save(ParValueType new_value) {
         value_ = new_value;
-        log_posterior_ = LogDensity(new_value);
+        log_posterior_ = LogDensity(new_value) / temperature_;
     }
 	
 	// Parameter is tracked / saved. Return True if parameter is tracked.
