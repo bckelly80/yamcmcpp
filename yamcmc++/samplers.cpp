@@ -149,7 +149,7 @@ std::string get_initial_directory()
 {
     std::string idirectory;
 	boost::filesystem::path ipath;
-	ipath = boost::filesystem::initial_path();
+	ipath = boost::filesystem::current_path();
 	idirectory = ipath.string(); // The initial working directory
 	
     return idirectory;
