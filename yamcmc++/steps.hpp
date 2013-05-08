@@ -142,8 +142,9 @@ public:
     // Method to perform the accept/reject part of the Metropolis-Hastings step. Returns a boolean indicating whether
     // the proposal was acceptec (True) or rejected (False).
 	bool Accept(ParValueType new_value, ParValueType old_value) {
+        double par_temp = parameter_.GetTemperature();
 		// MH accept/reject criteria
-		double alpha_ = parameter_.LogDensity(new_value) - parameter_.GetLogDensity()
+		double alpha_ = parameter_.LogDensity(new_value) / par_temp - parameter_.GetLogDensity() / par_temp
 		+ proposal_.LogDensity(old_value, new_value) - proposal_.LogDensity(new_value, old_value);
 		
 		if (!arma::is_finite(alpha_)) {
@@ -307,10 +308,6 @@ public:
         double other_logpost = ensemble_[parameter_index_-1].GetLogDensity();
         double other_temperature = ensemble_[parameter_index_-1].GetTemperature();
         
-        // Return the log-posterior values to the original Temp=1 scale
-        this_logpost = this_logpost * this_temperature;
-        other_logpost = other_logpost * other_temperature;
-        
         // Calculate the logarithm of the metropolis-hastings ratio
         double alpha = 1.0 / this_temperature * (other_logpost - this_logpost) +
         1.0 / other_temperature * (this_logpost - other_logpost);
@@ -325,9 +322,9 @@ public:
             ensemble_[parameter_index_-1].Save(this_theta);
             
             // Update the log-posterior values
-            double this_logpost_new = other_logpost / this_temperature;
+            double this_logpost_new = other_logpost;
             parameter_.SetLogDensity(this_logpost_new);
-            double other_logpost_new = this_logpost / other_temperature;
+            double other_logpost_new = this_logpost;
             ensemble_[parameter_index_-1].SetLogDensity(other_logpost_new);
             
             naccept_++;

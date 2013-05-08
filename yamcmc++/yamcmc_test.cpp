@@ -45,7 +45,7 @@ class Mu : public Parameter<double> {
 public:
     Mu() : Parameter<double>() {}
 	// Overidden constructor
-	Mu(bool track, std::string name) : Parameter<double>(track, name) {}
+	Mu(bool track, std::string name, double temperature=1.0) : Parameter<double>(track, name, temperature) {}
 	double RandomPosterior();
 	double StartingValue();
 	double LogDensity(double mu_value);
@@ -67,7 +67,7 @@ private:
 class SigmaSqr : public Parameter<double> {
 public:
 	SigmaSqr() : Parameter<double>() {}
-	SigmaSqr(bool track, std::string name) : Parameter<double>(track, name) {}
+	SigmaSqr(bool track, std::string name, double temperature=1.0) : Parameter<double>(track, name, temperature) {}
 	double RandomPosterior();
 	double StartingValue();
 	double LogDensity(double sigsqr_value);
@@ -88,7 +88,7 @@ private:
 class Theta : public Parameter<arma::vec> {
 public:
 	Theta() : Parameter<arma::vec>() {}
-	Theta(bool track, std::string name) : Parameter<arma::vec>(track, name) {}
+	Theta(bool track, std::string name, double temperature=1.0) : Parameter<arma::vec>(track, name, temperature) {}
 	arma::vec StartingValue();
 	std::string StringValue();
 	double LogDensity(arma::vec theta_value);
@@ -97,11 +97,9 @@ public:
 	void SetPrior(double prior_mean, double prior_var, double alpha, double beta);
 	void SetData(double* data, int ndata);
 private:
-	arma::vec theta_; // Parameter value
 	// Prior parameters
 	double prior_mean_;
 	double prior_var_;
-    double log_density_;
 	double alpha_;
 	double beta_;
 	double* data_; // Pointer to data array
@@ -113,12 +111,12 @@ double variance(double* values, int size);
 double mean(double* values, int size);
 void test_mcmc();
 void test_random();
-void test_adaptive_mha();
+void test_ensemble_mcmc();
 
 int main(int argc, const char * argv[])
 {
     // Run some tests...
-    test_mcmc();
+    test_ensemble_mcmc();
     return 0;
 }
 
@@ -234,7 +232,99 @@ void test_mcmc () {
     
 }
 
+void test_ensemble_mcmc () {
+	
+	// First find out which directory we are in
+	//std::string idirectory = get_initial_directory();
+    std::string idirectory = ".";
+    std::cout << idirectory << std::endl;
+    
+    // Generate fake data
+    double true_mean = 3.4;
+    double true_var = 2.3;
+    
+    int nsample = 1000;
+    double* simulated_data;
+    simulated_data = new double [nsample];
+    
+    for (int i=0; i<nsample; i++) {
+        simulated_data[i] = RandGen.normal(true_mean, sqrt(true_var));
+    }
+    
+    // Save simulated data to file
+    std::ofstream outfile("normal.dat");
+    for (int i=0; i<nsample; i++) {
+        outfile << simulated_data[i] << std::endl;
+    }
+    
+	// Prompt user for MCMC parameters
+	MCMCOptions mcmc_options = mcmc_options_prompt(idirectory);
+    
+	// Grab Data
+	double* data;
+	data = new double [nsample];
+	
+	std::ifstream datafile("normal.dat");
+	for (int i=0; i<nsample; i++) {
+		datafile >> data[i];
+	}
+    
+    // Set prior parameters
+	double prior_mean = 0.0, prior_variance = 1.0e6;
+	double prior_alpha = 0.0, prior_beta = 0.0;
+    
+    // Construct the parameter ensemble
+    Ensemble<Theta> ThetaEnsemble;
+    int nwalkers = 10;
+    
+    // Set the temperature ladder. The logarithms of the temperatures are on a linear grid
+    double max_temperature = 100.0;
+    
+    arma::vec temp_ladder = arma::linspace<arma::vec>(0.0, log(max_temperature), nwalkers);
+    temp_ladder = arma::exp(temp_ladder);
+    
+    // Add the parameters to the ensemble, starting with the coolest chain
+	for (int i=0; i<nwalkers; i++) {
+		// Add this walker to the ensemble
+        ThetaEnsemble.AddObject(new Theta(false, "theta", temp_ladder(i)));
+		// Set the prior parameters
+        ThetaEnsemble[i].SetPrior(prior_mean, prior_variance, prior_alpha, prior_beta);
+        ThetaEnsemble[i].SetData(simulated_data, nsample);
+	}
+    
+	// Instantiate Metropolis-Hastings proposal objects
+	
+	arma::mat prop_covar(2,2);
+	prop_covar.eye();
+    prop_covar = prop_covar * 1e-2;
+	
+	NormalProposal ThetaProp(1.0);
+	
+    // Instantiate MCMC Sampler and add pointers to step objects
+	Sampler normal_model(mcmc_options);
+	
+    int report_iter = mcmc_options.burnin + mcmc_options.thin * mcmc_options.sample_size;
+    
+    for (int i=nwalkers-1; i>0; i--) {
+        normal_model.AddStep(new AdaptiveMetro(ThetaEnsemble[i], ThetaProp, prop_covar, 0.4,
+                                               mcmc_options.burnin));
+        normal_model.AddStep(new ExchangeStep<arma::vec, Theta>(ThetaEnsemble[i], i, ThetaEnsemble, report_iter));
+    }
 
+    ThetaEnsemble[0].SetTracking(true);
+    normal_model.AddStep(new AdaptiveMetro(ThetaEnsemble[0], ThetaProp, prop_covar, 0.4,
+                                           mcmc_options.burnin));
+	
+    // 	  normal_model.AddStep(new MetropStep<double>(NormalMean, MeanProp));
+    //	  normal_model.AddStep(new MetropStep<double>(NormalVariance, VarProp));
+    //    normal_model.AddStep(new GibbsStep<double>(NormalMean));
+    //    normal_model.AddStep(new GibbsStep<double>(NormalVariance));
+    
+    // Now run the MCMC sampler. The samples will be dumped in the
+    // output file provided by the user.
+    normal_model.Run();
+    
+}
 
 //
 /* Here define the methods for the parameters, first for Mu then SigmaSqr */
@@ -426,7 +516,9 @@ double Theta::LogDensity(arma::vec theta_value)
 	log_prior_sigsqr = -(alpha_ + 1) * log(theta_value(1)) - beta_ / theta_value(1);
 	
 	log_posterior = log_likhood + log_prior_mu + log_prior_sigsqr;
-	
+
+	log_posterior = log_posterior;
+    
 	if (theta_value(1) < 0) {
 		log_posterior = -1e300;
 	}

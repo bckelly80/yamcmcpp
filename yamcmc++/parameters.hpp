@@ -93,7 +93,7 @@ public:
 	// new_value: New value to save.
 	virtual void Save(ParValueType new_value) {
         value_ = new_value;
-        log_posterior_ = LogDensity(new_value) / temperature_;
+        log_posterior_ = LogDensity(new_value);
     }
 	
 	// Parameter is tracked / saved. Return True if parameter is tracked.

@@ -36,7 +36,7 @@ target_rate_(target_rate), maxiter_(maxiter)
 bool AdaptiveMetro::Accept(arma::vec new_value, arma::vec old_value) {
 	
 	// MH accept/reject criteria: Proposal must be symmetric!!
-	alpha_ = parameter_.LogDensity(new_value) - parameter_.GetLogDensity();
+	alpha_ = (parameter_.LogDensity(new_value) - parameter_.GetLogDensity()) / parameter_.GetTemperature();
     
 	if (!arma::is_finite(alpha_)) {
 		// New value of the log-posterior is not finite, so reject this
