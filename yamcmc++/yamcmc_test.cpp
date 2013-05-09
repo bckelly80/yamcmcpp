@@ -229,7 +229,9 @@ void test_mcmc () {
     // Now run the MCMC sampler. The samples will be dumped in the
     // output file provided by the user.
     normal_model.Run();
-    
+ 
+    delete [] simulated_data;
+    delete [] data;
 }
 
 void test_ensemble_mcmc () {
@@ -323,7 +325,8 @@ void test_ensemble_mcmc () {
     // Now run the MCMC sampler. The samples will be dumped in the
     // output file provided by the user.
     normal_model.Run();
-    
+    delete [] simulated_data;
+    delete [] data;
 }
 
 //
