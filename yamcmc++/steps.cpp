@@ -41,6 +41,7 @@ bool AdaptiveMetro::Accept(arma::vec new_value, arma::vec old_value) {
 	if (!arma::is_finite(alpha_)) {
 		// New value of the log-posterior is not finite, so reject this
 		// proposal
+        alpha_ = 0.0;
 		return false;
 	}
 	
