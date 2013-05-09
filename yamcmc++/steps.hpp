@@ -315,6 +315,10 @@ public:
         // Perform metropolis-hastings update
 		double unif = uniform_(rng);
 		alpha = std::min(exp(alpha), 1.0);
+        if (!arma::is_finite(alpha)) {
+            alpha = 0.0;
+        }
+        
 		if (unif < alpha) {
             // Swap the parameter values
             ParValueType this_theta = parameter_.Value();
