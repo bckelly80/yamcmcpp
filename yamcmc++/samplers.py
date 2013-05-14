@@ -258,8 +258,8 @@ class MCMCSample(object):
         plt.xlabel("Lag")
 
         # Compute the autocorrelation timescale, and then reset the x-axis limits accordingly
-        acf_timescale = self.autocorr_timescale(traces)
-        plt.xlim(0, 5.0 * acf_timescale)
+        # acf_timescale = self.autocorr_timescale(traces)
+        plt.xlim(0, traces.size / 10.0)
         plt.show()
 
     def posterior_summaries(self, name):
