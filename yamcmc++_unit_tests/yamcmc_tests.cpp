@@ -381,7 +381,7 @@ TEST_CASE("steps/metropolis", "Test the Metropolis-Hastings step") {
     REQUIRE(abs(MH_ratio - 1.0) < 1e-8); // Make sure MH ratio is unity when using the same value
     
     // Run same tests, but for a tempered parameter.
-    double temperature = 1.0;
+    double temperature = 25.0;
     Mu TemperedMean(true, "hot mu", sigma, data, temperature);
     TemperedMean.SetPrior(prior_mu, prior_var);
     MetropStep<double> TemperedMetro(TemperedMean, NormProp);
@@ -392,6 +392,16 @@ TEST_CASE("steps/metropolis", "Test the Metropolis-Hastings step") {
     accepted = TemperedMetro.Accept(new_value, TemperedMean.Value());
     REQUIRE(accepted);
     MH_ratio = TemperedMetro.GetMetroRatio();
+    REQUIRE(abs(MH_ratio - 1.0) < 1e-8);
+    
+    // Test Metro step with asymmetric proposal
+    LogNormalProposal LogNormProp(prop_scale);
+    MetropStep<double> Hastings(NormalMean, LogNormProp);
+    Hastings.Start();
+    new_value = NormalMean.Value();
+    accepted = Hastings.Accept(new_value, NormalMean.Value());
+    REQUIRE(accepted);
+    MH_ratio = Hastings.GetMetroRatio();
     REQUIRE(abs(MH_ratio - 1.0) < 1e-8);
 }
 
