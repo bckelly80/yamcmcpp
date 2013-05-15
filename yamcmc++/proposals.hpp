@@ -129,25 +129,25 @@ private:
  ****************************************************************/
 
 // Base proposal class for ensemble (population) samplers.
-template <class ProposalType, class ParameterType>
-class EnsembleProposal: public Proposal<ProposalType> {
+template <class ParameterValueType, class ParameterType>
+class EnsembleProposal: public Proposal<ParameterValueType> {
 public:
     // Constructor
 	EnsembleProposal(Ensemble<ParameterType>& ensemble, int parameter_index) :
     ensemble_(ensemble), parameter_index_(parameter_index) {}
 	
 	// Return a parameter object from the complementary ensemble
-	virtual ProposalType GrabParameter() = 0;
+	virtual ParameterValueType GrabParameter() = 0;
 	
 	// Propose a new value of the parameter
-	ProposalType Draw(ProposalType starting_value) {
-		ProposalType p;
+	ParameterValueType Draw(ParameterValueType starting_value) {
+		ParameterValueType p;
 		return p;
 	}
 	
 	// Return the logarithm of the proposal density, needed for the
 	// Metropolis-Hastings update
-	double LogDensity(ProposalType new_value, ProposalType starting_value) {
+	double LogDensity(ParameterValueType new_value, ParameterValueType starting_value) {
 		return 0.0;
 	}
 	
@@ -223,7 +223,7 @@ public:
     // Method to return the log-density of the transition kernel
     // starting_value -> new_value. This actually returns the logarithm
 	// of the ratio of transition densities, since this is easier to compute
-	// than the individual values of the densities of thetransition kernels,
+	// than the individual values of the densities of the transition kernels,
 	// which would otherwise require the computation of an (nwalker - 1)-norm.
     double LogDensity(arma::vec new_value, arma::vec starting_value)
     {
