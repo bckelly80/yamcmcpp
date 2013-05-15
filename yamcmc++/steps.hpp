@@ -144,7 +144,7 @@ public:
 	bool Accept(ParValueType new_value, ParValueType old_value) {
         double par_temp = parameter_.GetTemperature();
 		// MH accept/reject criteria
-		double alpha_ = parameter_.LogDensity(new_value) / par_temp - parameter_.GetLogDensity() / par_temp
+		alpha_ = parameter_.LogDensity(new_value) / par_temp - parameter_.GetLogDensity() / par_temp
 		+ proposal_.LogDensity(old_value, new_value) - proposal_.LogDensity(new_value, old_value);
 		
 		if (!arma::is_finite(alpha_)) {
@@ -188,6 +188,11 @@ public:
 		niter_ = 0;
 		naccept_ = 0;
 	}
+    
+    // Return the current value of the Metropolis-Hastings ratio
+    double GetMetroRatio() {
+        return alpha_;
+    }
     
     // Return if parameter is tracked.
     bool ParameterTrack() {
@@ -244,7 +249,12 @@ public:
 	
 	// Method to perform the RAM step.
 	void DoStep();
-    
+
+    // Return the current value of the Metropolis-Hastings ratio
+    double GetMetroRatio() {
+        return alpha_;
+    }
+
     // Return if parameter is tracked.
     bool ParameterTrack() {
         return parameter_.Track();

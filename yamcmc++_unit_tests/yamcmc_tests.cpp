@@ -69,7 +69,6 @@ private:
     arma::vec& data_;
 };
 
-
 // Define class for bivariate normal mean parameter
 class BiMu : public Parameter<arma::vec> {
 public:
@@ -341,5 +340,58 @@ TEST_CASE("proposals/stretch", "Test the stretch proposal.") {
     REQUIRE(fracdiff < 1e-8);
     logdensity = MuStretch.LogDensity(MuEnsemble[1].Value(), MuEnsemble[0].Value());
     REQUIRE(logdensity == 0.0);
+}
+
+/*******************************************************************************
+ *                                                                             *
+ *                      TESTS FOR STEP CLASSES                                 *
+ *                                                                             *
+ *******************************************************************************/
+
+TEST_CASE("steps/metropolis", "Test the Metropolis-Hastings step") {
+    double sigma = 2.3;
+    double mu0 = 6.7;
+    
+    // Generate some data
+    unsigned int ndata = 1000;
+    arma::vec data(ndata);
+    data.randn();
+    data *= sigma;
+    data += mu0;
+    
+    // Create the parameter object
+    Mu NormalMean(true, "mu", sigma, data);
+    
+    double prior_mu = -1.0;
+    double prior_var = 10.0;
+    NormalMean.SetPrior(prior_mu, prior_var);
+    
+    // Create the proposal object
+    double prop_scale = sigma / sqrt(ndata);
+    NormalProposal NormProp(prop_scale);
+    
+    // Create the step object
+    MetropStep<double> MHStep(NormalMean, NormProp);
+    MHStep.Start();
+    
+    double new_value = NormalMean.Value();
+    bool accepted = MHStep.Accept(new_value, NormalMean.Value());
+    REQUIRE(accepted); // Make sure we accept when proposed value is the same as current value
+    double MH_ratio = MHStep.GetMetroRatio();
+    REQUIRE(abs(MH_ratio - 1.0) < 1e-8); // Make sure MH ratio is unity when using the same value
+    
+    // Run same tests, but for a tempered parameter.
+    double temperature = 1.0;
+    Mu TemperedMean(true, "hot mu", sigma, data, temperature);
+    TemperedMean.SetPrior(prior_mu, prior_var);
+    MetropStep<double> TemperedMetro(TemperedMean, NormProp);
+    TemperedMetro.Start();
+    
+    new_value = TemperedMean.Value();
+    REQUIRE(TemperedMean.GetTemperature() == temperature);
+    accepted = TemperedMetro.Accept(new_value, TemperedMean.Value());
+    REQUIRE(accepted);
+    MH_ratio = TemperedMetro.GetMetroRatio();
+    REQUIRE(abs(MH_ratio - 1.0) < 1e-8);
 }
 
