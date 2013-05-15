@@ -86,3 +86,33 @@ TEST_CASE("proposals/student_proposal", "Test the student's t proposal object.")
     REQUIRE(xmean_zscr < 4.0);
 }
 
+TEST_CASE("proposals/lognormal", "Test the log-normal proposal class.") {
+    double mu = 2.3;
+    double sigma = 4.5;
+    unsigned int ndraws = 100000;
+    
+    LogNormalProposal LgNormProp(sigma);
+    double chisqr = 0.0;
+    for (int i=0; i<ndraws; i++) {
+        double xdraw = LgNormProp.Draw(mu);
+        chisqr += (log(xdraw) - log(mu)) * (log(xdraw) - log(mu)) / sigma / sigma;
+    }
+    
+    // Test by comparing squared standardized residuals with chi-square distribution
+    double chisqr_zscr = abs(chisqr - ndraws) / sqrt(2.0 * ndraws);
+    REQUIRE(chisqr_zscr < 4.0);
+    
+    // Test LogDensity method of LogNormalProposal
+    double old_value = 4.5;
+    double new_value = 2.0;
+    double log_ratio = LgNormProp.LogDensity(new_value, old_value) - LgNormProp.LogDensity(old_value, new_value);
+    
+    double var = sigma * sigma;
+    double log_density1 = -0.5 * log(var) - log(new_value) -
+    0.5 * (log(new_value) - log(old_value)) * (log(new_value) - log(old_value)) / var;
+    double log_density2 = -0.5 * log(var) - log(old_value) -
+    0.5 * (log(new_value) - log(old_value)) * (log(new_value) - log(old_value)) / var;
+    double log_ratio0 = log_density1 - log_density2;
+    REQUIRE(abs((log_ratio - log_ratio0) / log_ratio0) < 1e-6);
+}
+

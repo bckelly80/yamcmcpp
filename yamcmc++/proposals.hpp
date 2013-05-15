@@ -112,10 +112,8 @@ public:
 	
 	// Log probability of proposal new value, given starting value.
 	double LogDensity(double new_value, double starting_value) {
-		double log_starting_value = log(starting_value);
 		double log_new_value = log(new_value);
-		double chi = (log_new_value - log_starting_value) / logsd_;
-		double logdens = -1.0 * log_new_value - 0.5 * chi * chi;
+		double logdens = -1.0 * log_new_value;
 		return logdens;
 	}
 	
