@@ -24,7 +24,7 @@ extern RandomGenerator RandGen;
  *                                                                             *
  *******************************************************************************/
 
-// Define class for Gaussian mean parameter
+// Define class for univariate normal mean parameter
 class Mu : public Parameter<double> {
 public:
 	// Constructor
@@ -51,7 +51,7 @@ public:
 	double LogDensity(double mu_value) {
         double log_posterior;
         log_posterior = -0.5 * (data_mean_ - mu_value) * (data_mean_ - mu_value) * data_.size() / sigsqr_ -
-        (mu_value - prior_mean_) * (mu_value - prior_mean_) / prior_var_;
+        0.5 * (mu_value - prior_mean_) * (mu_value - prior_mean_) / prior_var_;
         return log_posterior;
     }
 	// Prior is normal
@@ -67,6 +67,54 @@ private:
 	double prior_mean_;
 	double prior_var_;
     arma::vec& data_;
+};
+
+
+// Define class for bivariate normal mean parameter
+class BiMu : public Parameter<arma::vec> {
+public:
+	// Constructor
+	BiMu(bool track, std::string name, arma::mat covar, arma::mat& data, double temperature=1.0) :
+    Parameter<arma::vec>(track, name, temperature), data_(data)
+    {
+        covar_ = arma::symmatl(covar); // make sure covar is symmetric
+        data_mean_ = arma::trans(arma::mean(data_,0));
+    }
+    
+    // Generate a random draw of mu from its posterior
+    arma::vec RandomPosterior() {
+        arma::mat condvar = arma::inv(prior_var_.i() + data_.size() * covar_.i());
+        arma::vec condmean = condvar * (prior_var_.i() * prior_mean_ + data_.size() * covar_.i() * data_mean_);
+        return condmean + RandGen.normal(condvar);
+    }
+    
+    // Generate the initial value for mu by drawing from its posterior
+    arma::vec StartingValue() {
+        arma::mat icovar = covar_ / sqrt(data_.size());
+        arma::vec initial_mu = data_mean_ + RandGen.normal(icovar);
+        return initial_mu;
+    }
+    // Return the log-posterior
+	double LogDensity(arma::vec mu_value) {
+        double log_posterior;
+        arma::vec zcent = data_mean_ - mu_value;
+        arma::vec prior_cent = mu_value - prior_mean_;
+        log_posterior = -0.5 * data_.size() * arma::as_scalar(zcent.t() * covar_.i() * zcent) -
+        0.5 * arma::as_scalar(prior_cent.t() * prior_var_.i() * prior_cent);
+        return log_posterior;
+    }
+	// Prior is normal
+	void SetPrior(arma::vec prior_mean, arma::mat prior_var) {
+        prior_mean_ = prior_mean;
+        prior_var_ = prior_var;
+    }
+    
+private:
+    arma::mat covar_;
+    arma::vec data_mean_;
+    arma::vec prior_mean_;
+    arma::mat prior_var_;
+    arma::mat& data_;
 };
 
 TEST_CASE("parameters/normal_mean", "Test the parameter class for a normal mean.") {
@@ -236,27 +284,62 @@ TEST_CASE("proposals/lognormal", "Test the log-normal proposal class.") {
 }
 
 TEST_CASE("proposals/stretch", "Test the stretch proposal.") {
-    double sigma = 2.3;
-    double mu0 = 6.7;
+    arma::mat covar(2,2);
+    covar << 2.3 << -0.6 << arma::endr << -0.6 << 0.8 << arma::endr;
+    arma::vec mu0(2);
+    mu0 << 4.5 << -9.0;
     
     // Generate some data
     unsigned int ndata = 1000;
-    arma::vec data(ndata);
-    data.randn();
-    data *= sigma;
-    data += mu0;
+    arma::mat data(ndata,2);
+    for (int i=0; i<ndata; i++) {
+        data.row(i) = arma::trans(mu0 + RandGen.normal(covar));
+    }
     
     unsigned int nwalkers = 3;
-    Ensemble<Mu> MuEnsemble;
-    double prior_mean = -1.0;
-    double prior_var = 20.0;
+    Ensemble<BiMu> MuEnsemble;
+    arma::vec prior_mean(2);
+    prior_mean << -1.0 << 5.0;
+    arma::mat prior_var(2,2);
+    prior_var << 5.0 << 0.0 << arma::endr << 0.0 << 5.0 << arma::endr;
 
     // Add parameters to the ensemble
     for (int j=0; j<nwalkers; j++) {
-        MuEnsemble.AddObject(new Mu(true, "mu", sigma, data));
+        MuEnsemble.AddObject(new BiMu(true, "mu", covar, data));
         MuEnsemble[j].SetPrior(prior_mean, prior_var);
+        MuEnsemble[j].Save(MuEnsemble[j].StartingValue());
     }
     
+    StretchProposal<BiMu> MuStretch(MuEnsemble, 0);
     
+    // Test GrabParameter method
+    int ntrials = 1000;
+    int nthis_walker = 0;
+    int nother_walkers = 0;
+    arma::vec value0 = MuEnsemble[0].Value();
+    arma::vec value1 = MuEnsemble[1].Value();
+    arma::vec value2 = MuEnsemble[2].Value();
+    for (int j=0; j<ntrials; j++) {
+        arma::vec grabbed_value = MuStretch.GrabParameter();
+        if ((grabbed_value[0] == value0[0]) && (grabbed_value[1] == value0[1])) {
+            nthis_walker++;
+        }
+        else if ((grabbed_value[0] == value1[0]) && (grabbed_value[1] == value1[1])) {
+            nother_walkers++;
+        }
+        else if ((grabbed_value[0] == value2[0]) && (grabbed_value[1] == value2[1])) {
+            nother_walkers++;
+        }
+    }
+    REQUIRE(nthis_walker == 0); // Make sure we never grab the same walker
+    REQUIRE(nother_walkers == ntrials); // Make sure we always grab the other walkers
+    
+    // Test the log-density method
+    double logdensity = MuStretch.LogDensity(MuEnsemble[0].Value(), MuEnsemble[1].Value());
+    double logdensity0 = (MuEnsemble[0].Value().size() - 1.0) * log(2.0);
+    double fracdiff = abs((logdensity - logdensity0) / logdensity0);
+    REQUIRE(fracdiff < 1e-8);
+    logdensity = MuStretch.LogDensity(MuEnsemble[1].Value(), MuEnsemble[0].Value());
+    REQUIRE(logdensity == 0.0);
 }
 
