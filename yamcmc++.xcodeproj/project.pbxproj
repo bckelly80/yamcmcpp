@@ -12,6 +12,12 @@
 		554D0422173446EF00641704 /* random.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFAD64DC16E270E500B83426 /* random.cpp */; };
 		554D0423173446F200641704 /* samplers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFAD64DF16E2718700B83426 /* samplers.cpp */; };
 		554D0424173446F500641704 /* steps.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFAD64E216E271CA00B83426 /* steps.cpp */; };
+		DF04553E174304AF008C2243 /* yamcmc_tests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF04553D174304AF008C2243 /* yamcmc_tests.cpp */; };
+		DF045540174304AF008C2243 /* yamcmc___unit_tests.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = DF04553F174304AF008C2243 /* yamcmc___unit_tests.1 */; };
+		DF04554417430F52008C2243 /* proposals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFAD64D916E2709300B83426 /* proposals.cpp */; };
+		DF04554517430F57008C2243 /* random.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFAD64DC16E270E500B83426 /* random.cpp */; };
+		DF04554617430F60008C2243 /* samplers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFAD64DF16E2718700B83426 /* samplers.cpp */; };
+		DF04554717430F6D008C2243 /* steps.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFAD64E216E271CA00B83426 /* steps.cpp */; };
 		DFAD64D316E26FA100B83426 /* yamcmc__.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = DFAD64D216E26FA100B83426 /* yamcmc__.1 */; };
 		DFAD64DB16E2709300B83426 /* proposals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFAD64D916E2709300B83426 /* proposals.cpp */; };
 		DFAD64DE16E270E500B83426 /* random.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFAD64DC16E270E500B83426 /* random.cpp */; };
@@ -21,6 +27,16 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		DF045539174304AF008C2243 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+				DF045540174304AF008C2243 /* yamcmc___unit_tests.1 in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
 		DFAD64CB16E26FA100B83426 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -37,6 +53,9 @@
 		554D041B173443AB00641704 /* libyamcmcpp.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libyamcmcpp.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		554D041F1734465400641704 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		554D04261734676700641704 /* yamcmc++.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = "yamcmc++.hpp"; sourceTree = "<group>"; };
+		DF04553B174304AF008C2243 /* yamcmc++_unit_tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "yamcmc++_unit_tests"; sourceTree = BUILT_PRODUCTS_DIR; };
+		DF04553D174304AF008C2243 /* yamcmc_tests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = yamcmc_tests.cpp; sourceTree = "<group>"; };
+		DF04553F174304AF008C2243 /* yamcmc___unit_tests.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = "yamcmc___unit_tests.1"; sourceTree = "<group>"; };
 		DF72E5B3171CBE07008EFBBF /* parameters.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = parameters.hpp; sourceTree = "<group>"; };
 		DFAD64CD16E26FA100B83426 /* yamcmc++ */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "yamcmc++"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DFAD64D216E26FA100B83426 /* yamcmc__.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = yamcmc__.1; sourceTree = "<group>"; };
@@ -60,6 +79,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		DF045538174304AF008C2243 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		DFAD64CA16E26FA100B83426 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -70,11 +96,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		DF04553C174304AF008C2243 /* yamcmc++_unit_tests */ = {
+			isa = PBXGroup;
+			children = (
+				DF04553D174304AF008C2243 /* yamcmc_tests.cpp */,
+				DF04553F174304AF008C2243 /* yamcmc___unit_tests.1 */,
+			);
+			path = "yamcmc++_unit_tests";
+			sourceTree = "<group>";
+		};
 		DFAD64C416E26FA100B83426 = {
 			isa = PBXGroup;
 			children = (
 				554D041F1734465400641704 /* Accelerate.framework */,
 				DFAD64CF16E26FA100B83426 /* src */,
+				DF04553C174304AF008C2243 /* yamcmc++_unit_tests */,
 				DFAD64CE16E26FA100B83426 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -84,6 +120,7 @@
 			children = (
 				DFAD64CD16E26FA100B83426 /* yamcmc++ */,
 				554D041B173443AB00641704 /* libyamcmcpp.dylib */,
+				DF04553B174304AF008C2243 /* yamcmc++_unit_tests */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -138,6 +175,23 @@
 			productReference = 554D041B173443AB00641704 /* libyamcmcpp.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
+		DF04553A174304AF008C2243 /* yamcmc++_unit_tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DF045543174304AF008C2243 /* Build configuration list for PBXNativeTarget "yamcmc++_unit_tests" */;
+			buildPhases = (
+				DF045537174304AF008C2243 /* Sources */,
+				DF045538174304AF008C2243 /* Frameworks */,
+				DF045539174304AF008C2243 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "yamcmc++_unit_tests";
+			productName = "yamcmc++_unit_tests";
+			productReference = DF04553B174304AF008C2243 /* yamcmc++_unit_tests */;
+			productType = "com.apple.product-type.tool";
+		};
 		DFAD64CC16E26FA100B83426 /* yamcmc++ */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = DFAD64D616E26FA100B83426 /* Build configuration list for PBXNativeTarget "yamcmc++" */;
@@ -178,6 +232,7 @@
 			targets = (
 				DFAD64CC16E26FA100B83426 /* yamcmc++ */,
 				554D041A173443AB00641704 /* yamcmcpp */,
+				DF04553A174304AF008C2243 /* yamcmc++_unit_tests */,
 			);
 		};
 /* End PBXProject section */
@@ -191,6 +246,18 @@
 				554D0422173446EF00641704 /* random.cpp in Sources */,
 				554D0423173446F200641704 /* samplers.cpp in Sources */,
 				554D0424173446F500641704 /* steps.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DF045537174304AF008C2243 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DF04554717430F6D008C2243 /* steps.cpp in Sources */,
+				DF04554617430F60008C2243 /* samplers.cpp in Sources */,
+				DF04554517430F57008C2243 /* random.cpp in Sources */,
+				DF04554417430F52008C2243 /* proposals.cpp in Sources */,
+				DF04553E174304AF008C2243 /* yamcmc_tests.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -248,6 +315,34 @@
 					"-lboost_system",
 					"-larmadillo",
 					"-lboost_filesystem",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		DF045541174304AF008C2243 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				"HEADER_SEARCH_PATHS[arch=*]" = /usr/local/include;
+				"LIBRARY_SEARCH_PATHS[arch=*]" = /usr/local/lib;
+				"OTHER_LDFLAGS[arch=*]" = (
+					"-lboost_filesystem",
+					"-larmadillo",
+					"-lboost_system",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		DF045542174304AF008C2243 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				"OTHER_LDFLAGS[arch=*]" = (
+					"-lboost_filesystem",
+					"-larmadillo",
+					"-lboost_system",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -360,6 +455,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		DF045543174304AF008C2243 /* Build configuration list for PBXNativeTarget "yamcmc++_unit_tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DF045541174304AF008C2243 /* Debug */,
+				DF045542174304AF008C2243 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 		DFAD64C816E26FA100B83426 /* Build configuration list for PBXProject "yamcmc++" */ = {
 			isa = XCConfigurationList;
