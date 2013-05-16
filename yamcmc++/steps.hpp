@@ -362,6 +362,7 @@ public:
 			// Give report on average acceptance rate
 			Report();
 		}
+        alpha_ = alpha;
     }
     
 	// Report on acceptance rates since last report
@@ -371,7 +372,12 @@ public:
 		niter_ = 0;
 		naccept_ = 0;
 	}
-    
+
+    // Return the current value of the Metropolis-Hastings ratio
+    double GetMetroRatio() {
+        return alpha_;
+    }
+
     // Return if parameter is tracked.
     bool ParameterTrack() {
         return parameter_.Track();
@@ -385,6 +391,7 @@ private:
     boost::random::uniform_real_distribution<> uniform_;
     int niter_; // The number of iterations performed since last report
     int naccept_; // The number of accepted exchanges since last report
+    double alpha_; // Metropolis-hastings ratio
 };
 
 #endif /* defined(__yamcmc____steps__) */

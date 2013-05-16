@@ -531,3 +531,53 @@ TEST_CASE("steps/adaptive_mha", "Test the Robust Adaptive Metropolis step class"
     double subopt_fact = evals.n_elem * inv_eval_sqr_sum / (inv_eval_sum * inv_eval_sum);
     REQUIRE(subopt_fact < 1.01); // make sure sub-optimality factor is within 1% of theoretical value
 }
+
+TEST_CASE("steps/exchange", "Test the exchange step from parallel tempering.") {
+    double sigma = 2.3;
+    double mu0 = 6.7;    
+    double prior_mu = -1.0;
+    double prior_var = 10.0;
+    
+    // Generate some data
+    unsigned int ndata = 1000;
+    arma::vec data(ndata);
+    data.randn();
+    data *= sigma;
+    data += mu0;
+
+    // Create the parameter ensemble
+    Ensemble<Mu> MuEnsemble;
+    double temp_ladder[3] = {1.0, 2.0, 5.0};
+    for (int j=0; j<3; j++) {
+        MuEnsemble.AddObject(new Mu(true, "mu", sigma, data, temp_ladder[j]));
+        MuEnsemble[j].SetPrior(prior_mu, prior_var);
+        MuEnsemble[j].Save(MuEnsemble[j].StartingValue());
+    }
+    
+    // Create the exchange steps
+    ExchangeStep<double, Mu> Exchange21(MuEnsemble[2], 2, MuEnsemble);
+    ExchangeStep<double, Mu> Exchange10(MuEnsemble[1], 1, MuEnsemble);
+    
+    // First make sure that we always accept cases when the parameter value is unchanged
+    MuEnsemble[2].Save(MuEnsemble[1].Value());
+    Exchange21.DoStep();
+    double MH_ratio = Exchange21.GetMetroRatio();
+    REQUIRE(abs(MH_ratio - 1.0) < 1e-8);
+    
+    // Now test to make sure that the parameter values and logdensities are exchanged correctly
+    double bad_value = -10.0;
+    MuEnsemble[0].Save(bad_value); // Choose really bad value to make sure we accept the exchange
+    double old_value0 = bad_value;
+    double old_logpost0 = MuEnsemble[0].GetLogDensity();
+    double old_value1 = MuEnsemble[1].Value();
+    double old_logpost1 = MuEnsemble[1].GetLogDensity();
+    Exchange10.DoStep();
+    double new_value0 = MuEnsemble[0].Value();
+    double new_logpost0 = MuEnsemble[0].GetLogDensity();
+    double new_value1 = MuEnsemble[1].Value();
+    double new_logpost1 = MuEnsemble[1].GetLogDensity();
+    REQUIRE(old_value1 == new_value0); // Were the parameter values exchanged?
+    REQUIRE(old_value0 == new_value1);
+    REQUIRE(new_logpost0 == old_logpost1); // Were the log-densities exchanged?
+    REQUIRE(new_logpost1 == old_logpost0);
+}
