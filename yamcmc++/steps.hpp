@@ -255,6 +255,18 @@ public:
         return alpha_;
     }
 
+    // Return the average acceptance rate thus far.
+    double GetAcceptRate() {
+        double arate = ((double)(naccept_)) / ((double)(niter_));
+        return arate;
+    }
+    
+    // Return the covariance matrix of the proposals
+    arma::mat GetCovariance() {
+        arma::mat covar = chol_factor_.t() * chol_factor_;
+        return covar;
+    }
+    
     // Return if parameter is tracked.
     bool ParameterTrack() {
         return parameter_.Track();

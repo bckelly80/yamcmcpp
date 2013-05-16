@@ -501,6 +501,33 @@ TEST_CASE("steps/adaptive_mha", "Test the Robust Adaptive Metropolis step class"
     REQUIRE(abs(MH_ratio - 1.0) < 1e-8); // Make sure MH ratio is unity when using the same value
     
     // Make sure we achieve the requested acceptance rate
+    for (int i=0; i<niter; i++) {
+        RAM.DoStep();
+    }
+    double arate = RAM.GetAcceptRate();
+    double frac_diff = abs(arate - target_rate) / target_rate;
+    REQUIRE(frac_diff < 0.02); // Make sure acceptance rate is within 2% of target
     
+    // Test if covariance matrix of proposals has converged to stable point
+    prop_covar = RAM.GetCovariance();
+    arma::vec prop_eval(2);
+    arma::mat prop_evect(2,2);
+    arma::eig_sym(prop_eval, prop_evect, prop_covar);
+    arma::mat prop_covroot = prop_evect.t() * arma::diagmat(arma::sqrt(prop_eval)) * prop_evect;
     
+    arma::mat post_covar = arma::inv(prior_var.i() + ndata * covar.i());
+    arma::vec post_eval(2);
+    arma::mat post_evect(2,2);
+    arma::eig_sym(post_eval, post_evect, post_covar);
+    arma::mat postinv_covroot = post_evect.t() * arma::diagmat(1.0 / arma::sqrt(post_eval)) * post_evect;
+    
+    // Compute the sub-optimality factor. This should be unity if two matrices are proportional.
+    arma::mat ratio_matrix = prop_covroot * postinv_covroot;
+    arma::vec evals(2);
+    arma::mat evect(2,2);
+    arma::eig_sym(evals, evect, ratio_matrix);
+    double inv_eval_sum = arma::sum(1.0 / evals);
+    double inv_eval_sqr_sum = arma::sum(1.0 / (evals % evals));
+    double subopt_fact = evals.n_elem * inv_eval_sqr_sum / (inv_eval_sum * inv_eval_sum);
+    REQUIRE(subopt_fact < 1.01); // make sure sub-optimality factor is within 1% of theoretical value
 }
