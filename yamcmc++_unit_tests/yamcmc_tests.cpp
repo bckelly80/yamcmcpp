@@ -405,3 +405,102 @@ TEST_CASE("steps/metropolis", "Test the Metropolis-Hastings step") {
     REQUIRE(abs(MH_ratio - 1.0) < 1e-8);
 }
 
+TEST_CASE("steps/rank1_cholesky_update", "Test the rank-1 Cholesky update and downdate.") {
+    arma::mat corr(3,3);
+    corr << 1.0 << 0.3 << -0.5 << arma::endr
+    << 0.3 << 1.0 << 0.54 << arma::endr
+    << -0.5 << 0.54 << 1.0;
+    
+    arma::mat sigma(3,3);
+    sigma << 2.3 << 0.0 << 0.0 << arma::endr
+    << 0.0 << 0.45 << 0.0 << arma::endr
+    << 0.0 << 0.0 << 13.4;
+    
+    arma::mat covar = sigma * corr * sigma;
+    
+    arma::mat chol_factor = arma::chol(covar);
+    arma::vec v(3);
+    v.randn();
+    v = v / arma::norm(v, 2.0);
+    v = sqrt(0.5) * chol_factor.t() * v;
+    
+    arma::mat covar_update = covar + v * v.t();
+    arma::mat covar_downdate = covar - v * v.t();
+    
+    // First get cholesky factors from updated and downdated matrices using the slow way
+    arma::mat Lup0 = arma::chol(covar_update);
+    arma::mat Ldown0 = arma::chol(covar_downdate);
+    
+    // Now get rank-1 updated and downdated factors using the fast method.
+    arma::mat Lup = chol_factor;
+    arma::vec v0 = v;
+    CholUpdateR1(Lup, v, false);
+    arma::mat Ldown = chol_factor;
+    v0 = v;
+    CholUpdateR1(Ldown, v, true);
+    
+    // Make sure the cholesky factors from the two methods agree.
+    double max_frac_diff = 100.0;
+    for (int i=0; i<Lup.n_rows; i++) {
+        // Cholesky factor is upper triangular, so only loop over upper triangle
+        for (int j=i; j<Lup.n_cols; j++) {
+            double frac_diff = abs((Lup(i,j) - Lup0(i,j)) / Lup0(i,j));
+            max_frac_diff = std::min(frac_diff, max_frac_diff);
+        }
+    }
+    REQUIRE(max_frac_diff < 1e-8);
+    
+    max_frac_diff = 100.0;
+    for (int i=0; i<Ldown.n_rows; i++) {
+        // Cholesky factor is upper triangular, so only loop over upper triangle
+        for (int j=i; j<Ldown.n_cols; j++) {
+            double frac_diff = abs((Ldown(i,j) - Ldown0(i,j)) / Ldown0(i,j));
+            max_frac_diff = std::min(frac_diff, max_frac_diff);
+        }
+    }
+    REQUIRE(max_frac_diff < 1e-8);
+}
+
+TEST_CASE("steps/adaptive_mha", "Test the Robust Adaptive Metropolis step class") {
+    arma::mat covar(2,2);
+    covar << 2.3 << -0.6 << arma::endr << -0.6 << 0.8 << arma::endr;
+    arma::vec mu0(2);
+    mu0 << 4.5 << -9.0;
+    
+    // Generate some data
+    unsigned int ndata = 1000;
+    arma::mat data(ndata,2);
+    for (int i=0; i<ndata; i++) {
+        data.row(i) = arma::trans(mu0 + RandGen.normal(covar));
+    }
+
+    BiMu NormMean(true, "mu", covar, data);
+    
+    arma::vec prior_mean(2);
+    prior_mean << -1.0 << 5.0;
+    arma::mat prior_var(2,2);
+    prior_var << 5.0 << 0.0 << arma::endr << 0.0 << 5.0 << arma::endr;
+    
+    NormMean.SetPrior(prior_mean, prior_var);
+
+    NormalProposal UnitProp(1.0);
+    
+    double target_rate = 0.4;
+    arma::mat prop_covar(2,2);
+    prop_covar.eye();
+    int niter = 100000;
+    int maxiter = niter + 1;
+    AdaptiveMetro RAM(NormMean, UnitProp, prop_covar, target_rate, maxiter);
+    RAM.Start();
+    
+    // Make sure we always accept proposed values that are the same as the current values
+    arma::vec new_value = NormMean.Value();
+    bool accepted = RAM.Accept(new_value, NormMean.Value());
+    REQUIRE(accepted);
+    double MH_ratio = RAM.GetMetroRatio();
+    REQUIRE(abs(MH_ratio - 1.0) < 1e-8); // Make sure MH ratio is unity when using the same value
+    
+    // Make sure we achieve the requested acceptance rate
+    
+    
+}
