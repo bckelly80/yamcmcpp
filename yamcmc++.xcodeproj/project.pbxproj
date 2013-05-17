@@ -23,7 +23,6 @@
 		DFAD64DE16E270E500B83426 /* random.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFAD64DC16E270E500B83426 /* random.cpp */; };
 		DFAD64E116E2718700B83426 /* samplers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFAD64DF16E2718700B83426 /* samplers.cpp */; };
 		DFAD64E416E271CA00B83426 /* steps.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFAD64E216E271CA00B83426 /* steps.cpp */; };
-		DFAD64E616E2725900B83426 /* yamcmc_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFAD64E516E2725900B83426 /* yamcmc_test.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -269,7 +268,6 @@
 				DFAD64DE16E270E500B83426 /* random.cpp in Sources */,
 				DFAD64E116E2718700B83426 /* samplers.cpp in Sources */,
 				DFAD64E416E271CA00B83426 /* steps.cpp in Sources */,
-				DFAD64E616E2725900B83426 /* yamcmc_test.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -463,6 +461,7 @@
 				DF045542174304AF008C2243 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		DFAD64C816E26FA100B83426 /* Build configuration list for PBXProject "yamcmc++" */ = {
 			isa = XCConfigurationList;

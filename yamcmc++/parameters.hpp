@@ -29,31 +29,16 @@ extern RandomGenerator RandGen;
  *****************************************************************/
 
 // This is the base Parameter class. It is abstract, so it should
-// never be instantiated directly. Instead, users must subclass it when
-// building their own parameter classes.
-
-template<class ParValueType>
-class Parameter {
+// never be instantiated directly. Users should subclass the Parameter class,
+// not BaseParameter class as the parameter value type is not specified in the
+// BaseParameter class. Because of this, the MCMC step classes take a reference
+// to the Parameter class.
+class BaseParameter {
 public:
-	/// Default class constructor.
-	Parameter() {}
+    // Constructor
+    BaseParameter(bool track, std::string label, double temperature=1.0) :
+    track_(track), label_(label), temperature_(temperature) {}
     
-    // track: True if parameter should be tracked and saved.
-    // label: Label of parameter for tracking purposes.
-    // temperature: Temperature of parameter object. This is used by ensemble samplers. If you don't
-    //              know what this is just keep it at the default of 1.0.
-	Parameter(bool track, std::string label, double temperature=1.0) : track_(track), label_(label),
-    temperature_(temperature) {}
-	
-	// Method to return the starting value for the parameter.
-	virtual ParValueType StartingValue() = 0;
-	
-	// Method to return the log of the probability density (plus constant).
-	// value: Value of parameter to evaluate density at.
-	virtual double LogDensity(ParValueType value) {
-		return 0.0;
-    }
-	
 	// Return the current value of the log-posterior. Useful for
 	// Metropolis steps so we don't have to compute the log-posterior
 	// for the current value of the parameter more than once
@@ -72,30 +57,11 @@ public:
         return temperature_;
     }
     
-	// Return a random draw from the posterior.
-	// Random draw from posterior is called by GibbsStep.
-	virtual ParValueType RandomPosterior() {
-        ParValueType p;
-		return p;
-	}
-	
-	// Return the current value of the parameter.
-	ParValueType Value() {
-        return value_;
-    }
-	
 	// Return a string representation of the parameter value.
 	virtual std::string StringValue() {
 		return " ";
 	}
-	
-	// Save a new value of the parameter.
-	// new_value: New value to save.
-	virtual void Save(ParValueType new_value) {
-        value_ = new_value;
-        log_posterior_ = LogDensity(new_value);
-    }
-	
+    
 	// Parameter is tracked / saved. Return True if parameter is tracked.
 	bool Track() {
 		return track_;
@@ -111,16 +77,75 @@ public:
 		return label_;
 	}
     
+    // Set the size of the vector containing the MCMC samples. This will be overidden by the Parameter class.
+    virtual void SetSampleSize(int sample_size) = 0;
+    
+    // Add a value to the set of MCMC samples. This will be overidden by the Parameter class.
+    virtual void AddToSample(int current_iter) = 0;
+
+    
 protected:
-    double log_posterior_; // The log of the posterior distribution
-    ParValueType value_; // The current value of the parameter
     // Temperature value, used when doing tempered steps. By default this is one.
     double temperature_;
-    
 	/// Should this variable be tracked?
 	bool track_;
 	/// Name of variable for tracking purposes.
 	std::string label_;
+    double log_posterior_; // The log of the posterior distribution
+};
+
+// Templated abstract parameter class. Users should subclass the Parameter class because the
+// Step classes need to know the type of the parameter values.
+template<class ParValueType>
+class Parameter : public BaseParameter {
+public:
+
+	// Method to return the starting value for the parameter.
+	virtual ParValueType StartingValue() = 0;
+	
+	// Method to return the log of the probability density (plus constant).
+	// value: Value of parameter to evaluate density at.
+	virtual double LogDensity(ParValueType value) {
+		return 0.0;
+    }
+
+	// Return a random draw from the posterior.
+	// Random draw from posterior is called by GibbsStep.
+	virtual ParValueType RandomPosterior() {
+        ParValueType p;
+		return p;
+	}
+	
+	// Return the current value of the parameter.
+	ParValueType Value() {
+        return value_;
+    }
+
+	// Save a new value of the parameter.
+	// new_value: New value to save.
+	virtual void Save(ParValueType new_value) {
+        value_ = new_value;
+        log_posterior_ = LogDensity(new_value);
+    }
+
+    // Set the size of the vector containing the MCMC samples
+    void SetSampleSize(int sample_size) {
+        samples_.resize(sample_size);
+    }
+    
+    // Add a value to the set of MCMC samples
+    void AddToSample(int current_iter) {
+        samples_[current_iter] = value_;
+    }
+    
+    // Return a copy of the MCMC samples
+    std::vector<ParValueType> GetSamples() {
+        return samples_;
+    }
+    
+protected:
+    ParValueType value_; // The current value of the parameter
+    std::vector<ParValueType> samples_; // Vector containing the MCMC samples
 };
 
 // This is the Ensemble class. It is basically a class

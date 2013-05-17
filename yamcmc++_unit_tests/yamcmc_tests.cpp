@@ -581,3 +581,46 @@ TEST_CASE("steps/exchange", "Test the exchange step from parallel tempering.") {
     REQUIRE(new_logpost0 == old_logpost1); // Were the log-densities exchanged?
     REQUIRE(new_logpost1 == old_logpost0);
 }
+
+/*******************************************************************************
+ *                                                                             *
+ *                      TESTS FOR MCMC SAMPLER CLASSES                         *
+ *                                                                             *
+ *******************************************************************************/
+
+TEST_CASE("samplers/metropolis_sampler", "Test the MCMC sampler for a univariate normal model using a Metropolis algorithm.")
+{
+    double sigma = 2.3;
+    double mu0 = 6.7;
+    double prior_mu = -1.0;
+    double prior_var = 10.0;
+    
+    // Generate some data
+    unsigned int ndata = 1000;
+    arma::vec data(ndata);
+    data.randn();
+    data *= sigma;
+    data += mu0;
+    
+    // setup MCMC options
+    int sample_size = 100000;
+    int nthin = 1;
+    int burnin = 10000;
+    std::string data_file = "metro_test_data.dat";
+    std::string out_file = "metro_test_mcmc.dat";
+    MCMCOptions mcmc_options;
+    mcmc_options.sample_size = sample_size;
+    mcmc_options.thin = nthin;
+    mcmc_options.burnin = burnin;
+    mcmc_options.data_file = data_file;
+    mcmc_options.out_file = out_file;
+    
+    // Instantiate MCMC objects needed for MCMC Sampler
+    Mu NormMean(true, "mu", sigma, data);
+    StudentProposal MuProp(8.0, sigma / sqrt(ndata));
+	Sampler normal_model(mcmc_options);
+    int report_iter = sample_size;
+	normal_model.AddStep(new MetropStep<double>(NormMean, MuProp, report_iter));
+    	
+
+}

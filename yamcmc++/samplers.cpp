@@ -24,25 +24,17 @@ extern RandomGenerator RandGen;
  Methods of classes from mymcmc.hpp
  *********************************************/
 
-// Constructor for Sampler objects. Takes a MCMCOptions struct as input.
-Sampler::Sampler(MCMCOptions& options) {
-	std::cout << "Creating Sampler... " << std::endl;
-	sample_size_ = options.sample_size;
-	burnin_ = options.burnin;
-	thin_ = options.thin;
-	out_file_ = options.out_file;
-}
-
 // Add Step to Sampler execution stack. All parameters should have an associated Step that is added to the sampler.
 // The sampler stack defines one sampler iteration.
 // step: Step object for a given parameter.
 void Sampler::AddStep(Step* step) {
 	// Add step to step stack.
 	steps_.push_back(step);
-	// Add index to tracking stack, if necessary tracked.
-	if (steps_.back().ParameterTrack()) {
-		tracks_.push_back(steps_.size() - 1);
-	}
+
+    if (steps_.back().ParameterTrack()) {
+        // Add parameter name to tracking stack
+        tracked_names_.insert(steps_.back().ParameterLabel());
+    }
 }
 
 // Run sampler for a specific number of iterations.
@@ -71,28 +63,19 @@ void Sampler::Iterate(int number_of_iterations, bool progress) {
 void Sampler::Run() {
 	// Timer
 	boost::timer timer;
-	
+	current_iter_ = 0;
+    
+    // Allocate memory for MCMC samples
+    for (std::set<std::string>::iterator it=tracked_names_.begin(); it!=tracked_names_.end(); ++it) {
+        std::string parameter_label = *it;
+        p_tracked_parameters_[parameter_label]->SetSampleSize(sample_size_);
+    }
+    
 	// Status of sampler...
 	std::cout << "Running sampler..." << std::endl;
 	std::cout << "Number of steps added: " << NumberOfSteps() << std::endl;
 	std::cout << "Number of tracked steps added: " << NumberOfTrackedSteps() << std::endl;
-	
-	// Opening output file
-	std::cout << "Opening output file: " << out_file_ << std::endl;
-	std::ofstream outfile(out_file_.c_str());
-	if (!outfile.is_open()) {
-		std::cerr << "ERROR: Cannot open file!";
-		exit(1);
-	}
-	
-	for (int k = 0; k < tracks_.size(); ++k) {
-		if (k == tracks_.size() - 1) {
-			outfile << steps_[tracks_[k]].ParameterLabel() << std::endl;
-		} else {
-			outfile << steps_[tracks_[k]].ParameterLabel() << ",";
-		}
-	}
-	
+			
 	// Setting starting value:
 	std::cout << "Setting starting values..." << std::endl;
 	for (int i = 0; i < steps_.size(); ++i) {
@@ -108,12 +91,11 @@ void Sampler::Run() {
 	for (int i = 0; i < sample_size_; ++i) {
 		Iterate(thin_);
 		// Save data
-        SaveValues(outfile);
- 		//Show progress
+        SaveValues();
+ 		// Show progress
 		++show_progress;
+        ++current_iter_;
 	}
-	
-	outfile.close();
 	
 	// Dump seed to file for future use
 	std::cout << "Saving seed to file seed.txt\n";
@@ -123,23 +105,11 @@ void Sampler::Run() {
 }
 
 // Method to save the current values of the parameters to a file.
-void Sampler::SaveValues(std::ofstream& outfile)
+void Sampler::SaveValues()
 {
-    for (int k = 0; k < tracks_.size(); ++k) {
-        outfile << steps_[tracks_[k]].ParameterValue() << " ";
-    }
-    outfile << std::endl;
-}
-
-// Method to save the current values of the parameters to a file. This differs
-// from the Sampler::SaveValues method because for ensemble samplers we need
-// to print out each of the n_ensemble parameter values on a new line for a
-// single iteration.
-void EnsembleSampler::SaveValues(std::ofstream& outfile)
-{
-    for (int k=0; k < tracks_.size(); ++k) {
-        // Assume that each walker corresponding to a single Parameter object
-        outfile << steps_[tracks_[k]].ParameterValue() << std::endl;
+    for (std::set<std::string>::iterator it=tracked_names_.begin(); it!=tracked_names_.end(); ++it) {
+        std::string parameter_label = *it;
+        p_tracked_parameters_[parameter_label]->AddToSample(current_iter_);
     }
 }
 

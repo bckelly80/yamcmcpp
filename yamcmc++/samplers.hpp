@@ -31,6 +31,8 @@
 #include <ctime>
 #include <fstream>
 #include <limits>
+#include <map>
+#include <set>
 // Boost includes
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/progress.hpp>
@@ -86,7 +88,7 @@ bool approx_equal(double a, double b);
 class Sampler {
 public:
     // Constructor to initialize sampler. Takes a MCMCOptions struct as input.
-    Sampler(MCMCOptions& options);
+    Sampler(int sample_size, int burnin, int thin=1) : sample_size_(sample_size), burnin_(burnin), thin_(thin) {};
 	
     // Method to add Step to Sampler execution stack.
     void AddStep(Step* step);
@@ -104,34 +106,20 @@ public:
     
     // Return number of tracked steps in one sampler iteration.
     int NumberOfTrackedSteps() {
-        return tracks_.size();
+        return tracked_names_.size();
     }
     
     // Save the parameter values after a iteration to a file
-    virtual void SaveValues(std::ofstream& outfile);
+    virtual void SaveValues();
     
 protected:
     int sample_size_;
+    int current_iter_;
     int burnin_;
     int thin_;
-	std::string out_file_;
     boost::ptr_vector<Step> steps_;
-	std::vector<int> tracks_;
-};
-
-/*
- Ensemble MCMC sampler. This is basically the same as the normal MCMC sampler class, except
- we need to modify the SaveValues method to print out the values for each walker on a
- new line for a single iteration.
- */
-class EnsembleSampler : public Sampler
-{
-public:
-	// Constructor to initialize sampler. Takes a MCMCOptions struct as input.
-	EnsembleSampler(MCMCOptions& options) : Sampler(options) {};
-    
-	// Method to print out the parameter values to a files
-    void SaveValues(std::ofstream& outfile);
+    std::map<std::string, BaseParameter*> p_tracked_parameters_;
+    std::set<std::string> tracked_names_;
 };
 
 #endif /* defined(__yamcmc____samplers__) */
