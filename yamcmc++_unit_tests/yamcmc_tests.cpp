@@ -588,7 +588,8 @@ TEST_CASE("steps/exchange", "Test the exchange step from parallel tempering.") {
  *                                                                             *
  *******************************************************************************/
 
-TEST_CASE("samplers/metropolis_sampler", "Test the MCMC sampler for a univariate normal model using a Metropolis algorithm.")
+
+TEST_CASE("samplers/metropolis_uni_sampler", "Test the MCMC sampler for a univariate normal model using a Metropolis algorithm.")
 {
     double sigma = 2.3;
     double mu0 = 6.7;
@@ -606,21 +607,32 @@ TEST_CASE("samplers/metropolis_sampler", "Test the MCMC sampler for a univariate
     int sample_size = 100000;
     int nthin = 1;
     int burnin = 10000;
-    std::string data_file = "metro_test_data.dat";
-    std::string out_file = "metro_test_mcmc.dat";
-    MCMCOptions mcmc_options;
-    mcmc_options.sample_size = sample_size;
-    mcmc_options.thin = nthin;
-    mcmc_options.burnin = burnin;
-    mcmc_options.data_file = data_file;
-    mcmc_options.out_file = out_file;
     
     // Instantiate MCMC objects needed for MCMC Sampler
     Mu NormMean(true, "mu", sigma, data);
+    NormMean.SetPrior(prior_mu, prior_var);
     StudentProposal MuProp(8.0, sigma / sqrt(ndata));
-	Sampler normal_model(mcmc_options);
+	Sampler normal_model(sample_size, burnin, nthin);
     int report_iter = sample_size;
 	normal_model.AddStep(new MetropStep<double>(NormMean, MuProp, report_iter));
-    	
-
+    
+    // Make sure the parameter named "mu" is tracked
+    std::set<std::string> tracked_names = normal_model.GetTrackedNames();
+    std::set<std::string>::iterator mu_it;
+    mu_it = tracked_names.find(NormMean.Label());
+    REQUIRE(mu_it != tracked_names.end());
+    
+    // Make sure the map of pointers to the parameter objects points to the correct object
+    std::map<std::string, BaseParameter*> p_tracked_params = normal_model.GetTrackedParams();
+    
+    // Run the sampler
+    normal_model.Run();
+    
+    // Grab the sampled parameter values
+    std::vector<double> samples0 = NormMean.GetSamples();
+    arma::vec samples(samples0); // convert to armadillo library vector
+    double post_mean = arma::mean(samples);
+    double post_var = arma::var(samples);
+    double zscore = std::abs(post_mean - mu0) / sqrt(post_var);
+    REQUIRE(zscore < 3.0);
 }

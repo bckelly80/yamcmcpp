@@ -33,7 +33,9 @@ void Sampler::AddStep(Step* step) {
 
     if (steps_.back().ParameterTrack()) {
         // Add parameter name to tracking stack
-        tracked_names_.insert(steps_.back().ParameterLabel());
+        std::string par_label = steps_.back().ParameterLabel();
+        tracked_names_.insert(par_label);
+        p_tracked_parameters_[par_label] = steps_.back().GetParPointer();
     }
 }
 

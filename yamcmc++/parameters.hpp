@@ -99,7 +99,10 @@ protected:
 template<class ParValueType>
 class Parameter : public BaseParameter {
 public:
-
+    // Constructor
+    Parameter(bool track, std::string label, double temperature=1.0) :
+    BaseParameter(track, label, temperature) {}
+    
 	// Method to return the starting value for the parameter.
 	virtual ParValueType StartingValue() = 0;
 	

@@ -99,6 +99,11 @@ public:
 	std::string ParameterValue() {
 		return parameter_.StringValue();
 	}
+    
+    // Return a pointer to the parameter
+    Parameter<ParValueType>* GetParPointer() {
+        return &parameter_;
+    }
 	
 private:
 	/// Reference to parameter associated with step instance.
@@ -198,7 +203,11 @@ public:
     bool ParameterTrack() {
         return parameter_.Track();
     }
-	
+    
+    // Return a pointer to the parameter
+    Parameter<ParValueType>* GetParPointer() {
+        return &parameter_;
+    }
 private:
 	// References to parameter and proposal associated with step instance.
 	Parameter<ParValueType>& parameter_;
@@ -270,6 +279,11 @@ public:
     // Return if parameter is tracked.
     bool ParameterTrack() {
         return parameter_.Track();
+    }
+    
+    // Return a pointer to the parameter
+    Parameter<arma::vec>* GetParPointer() {
+        return &parameter_;
     }
 	
 private:
@@ -382,7 +396,12 @@ public:
     bool ParameterTrack() {
         return parameter_.Track();
     }
-	
+    
+    // Return a pointer to the parameter
+    Parameter<ParValueType>* GetParPointer() {
+        return &parameter_;
+    }
+    
 private:
     Parameter<ParValueType>& parameter_; // The parameter associated with this step
     int parameter_index_; // The index of parameter_ in the ensemble

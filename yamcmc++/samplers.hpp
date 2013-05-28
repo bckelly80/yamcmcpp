@@ -35,6 +35,7 @@
 #include <set>
 // Boost includes
 #include <boost/ptr_container/ptr_vector.hpp>
+#include <boost/ptr_container/ptr_map.hpp>
 #include <boost/progress.hpp>
 #include <boost/timer.hpp>
 #include <boost/filesystem/path.hpp>
@@ -107,6 +108,16 @@ public:
     // Return number of tracked steps in one sampler iteration.
     int NumberOfTrackedSteps() {
         return tracked_names_.size();
+    }
+    
+    // Return names of parameters that we are tracking
+    std::set<std::string> GetTrackedNames() {
+        return tracked_names_;
+    }
+    
+    // Return map of pointers to tracked parameter objects
+    std::map<std::string, BaseParameter*> GetTrackedParams() {
+        return p_tracked_parameters_;
     }
     
     // Save the parameter values after a iteration to a file
