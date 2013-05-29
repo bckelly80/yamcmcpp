@@ -639,6 +639,92 @@ TEST_CASE("samplers/metropolis_uni_sampler", "Test the MCMC sampler for a univar
     double post_mean = arma::mean(samples);
     double post_var = arma::var(samples);
     double zscore = std::abs(post_mean - mu0) / sqrt(post_var);
-    std::cout << "zscore: " << zscore << std::endl;
     REQUIRE(zscore < 3.0);
+}
+
+TEST_CASE("samplers/RAM_bivariate_sampler", "Test the MCMC sampler for a bivariate normal model using the Robust Adaptive Metropolis algorithm.")
+{
+    arma::mat covar(2,2);
+    covar << 2.3 << -0.6 << arma::endr << -0.6 << 0.8 << arma::endr;
+    arma::vec mu0(2);
+    mu0 << 4.5 << -9.0;
+    
+    // Generate some data
+    unsigned int ndata = 1000;
+    arma::mat data(ndata,2);
+    for (int i=0; i<ndata; i++) {
+        data.row(i) = arma::trans(mu0 + RandGen.normal(covar));
+    }
+    
+    BiMu NormMean(true, "mu", covar, data);
+    
+    arma::vec prior_mean(2);
+    prior_mean << 0.0 << 0.0;
+    arma::mat prior_var(2,2);
+    prior_var << 100.0 << 0.0 << arma::endr << 0.0 << 100.0 << arma::endr;
+    
+    NormMean.SetPrior(prior_mean, prior_var);
+    
+    NormalProposal UnitProp(1.0);
+    
+    // setup MCMC parameters
+    int sample_size = 100000;
+    int nthin = 1;
+    int burnin = 10000;
+
+    // Instantiate MCMC sampler object
+    Sampler normal_model(sample_size, burnin, nthin);
+
+    // RAM step parameters
+    double target_rate = 0.4;
+    arma::mat prop_covar(2,2);
+    prop_covar.eye();
+    int maxiter = burnin;
+    
+    // Add RAM step
+    normal_model.AddStep(new AdaptiveMetro(NormMean, UnitProp, prop_covar, target_rate, maxiter));
+    
+    // Make sure the parameter named "mu" is tracked
+    std::set<std::string> tracked_names = normal_model.GetTrackedNames();
+    std::set<std::string>::iterator mu_it;
+    mu_it = tracked_names.find(NormMean.Label());
+    REQUIRE(mu_it != tracked_names.end());
+    
+    // Make sure the map of pointers to the parameter objects points to the correct object
+    std::map<std::string, BaseParameter*> p_tracked_params = normal_model.GetTrackedParams();
+    REQUIRE(p_tracked_params.size() == 1);
+    std::map<std::string, BaseParameter*>::iterator mu_it2 = p_tracked_params.find(NormMean.Label());
+    REQUIRE(mu_it2 != p_tracked_params.end());
+    REQUIRE(p_tracked_params[NormMean.Label()]->Label() == "mu");
+    REQUIRE(p_tracked_params[NormMean.Label()]->GetTemperature() == 1.0);
+    
+    // Run the sampler
+    normal_model.Run();
+    
+    // Grab the sampled parameter values
+    std::vector<arma::vec> samples0 = NormMean.GetSamples();
+    
+    // convert to armadillo library vector
+    arma::vec mu1_samples(sample_size);
+    arma::vec mu2_samples(sample_size);
+    for (int i=0; i<sample_size; i++) {
+        mu1_samples[i] = samples0[i](0);
+        mu2_samples[i] = samples0[i](1);
+    }
+    
+    arma::vec post_mean(2);
+    post_mean(0) = arma::mean(mu1_samples);
+    post_mean(1) = arma::mean(mu2_samples);
+    
+    arma::mat post_covar(2,2);
+    post_covar(0,0) = arma::var(mu1_samples);
+    post_covar(1,1) = arma::var(mu2_samples);
+    post_covar(0,1) = arma::as_scalar(arma::cov(mu1_samples, mu2_samples));
+    post_covar(1,0) = post_covar(0,1);
+    
+    // make sure true values are contained within 99% credibility region
+    arma::vec mu_centered = post_mean - mu0;
+    double zsqr = arma::as_scalar(mu_centered.t() * arma::inv(post_covar) * mu_centered);
+    std::cout << "zsqr: " << zsqr << std::endl;
+    REQUIRE(zsqr < 9.21);
 }
