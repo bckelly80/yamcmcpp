@@ -9,16 +9,7 @@
  *     University of California, Santa Barbara
  *     (bckelly80@gmail.com)
  *
- *  Routines to perform Markov Chain Monte Carlo (MCMC) adopted from
- *
- *  	Scythe MCMC - A Scythe Markov Chain Monte Carlo C++ Framework
- *		by Tristan Zajonc (tristanz@gmail.com)
- *
- *	I have adopted most of the classes and functions from Scythe MCMC, but
- *  have modified them to remove the dependency on the Scythe Statistical
- *  library. My set of MCMC classes and functions depends on the BOOST
- *	libraries. In addition, I have made considerable additions ands extensions
- *  to the Scythe MCMC classes.
+ *  Routines to perform Markov Chain Monte Carlo (MCMC).
  */
 
 #ifndef __yamcmc____samplers__
@@ -44,8 +35,7 @@
 #include "random.hpp"
 #include "steps.hpp"
 
-// Basic MCMC options. These options are generally specified at the command line and are generic to all
-// MCMC samplers.
+// Basic MCMC options. These options are generally specified at the command line.
 struct MCMCOptions {
 	/// Sample size. (iterations - burnin)/(thin + 1).
 	int sample_size;

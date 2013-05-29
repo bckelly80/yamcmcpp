@@ -43,7 +43,7 @@ std::string to_string (const T& t) {
 
 /////////////////////////////////////////////////////////////////////
 
-// Abstract base step class. Executes the main step function, such as taking a MH step or deterministic step.
+// Abstract base step class. Executes the main step function, such as taking a MH step or Gibbs step.
 // The Step class will never be instantiated directly.
 class Step {
 public:
@@ -79,8 +79,7 @@ public:
 	/// Default constructor, for copy assignments, etc.
 	GibbsStep() {}
     
-	// Main constructor taking a pointer to a Parameter object.
-    // parameter: A Parameter that implements Parameter::RandomPosterior.
+	// Main constructor taking a reference to a Parameter object.
 	GibbsStep(Parameter<ParValueType>& parameter) : parameter_(parameter) {}
 	
 	// Method to take a Gibbs step for the parameter. Draws from the parameter's Parameter::RandomPosterior function

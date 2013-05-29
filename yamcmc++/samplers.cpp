@@ -20,13 +20,7 @@ extern boost::random::mt19937 rng;
 // Object containing some common random number generators.
 extern RandomGenerator RandGen;
 
-/**********************************************
- Methods of classes from mymcmc.hpp
- *********************************************/
-
-// Add Step to Sampler execution stack. All parameters should have an associated Step that is added to the sampler.
-// The sampler stack defines one sampler iteration.
-// step: Step object for a given parameter.
+// Add Step to Sampler stack.
 void Sampler::AddStep(Step* step) {
 	// Add step to step stack.
 	steps_.push_back(step);
@@ -40,8 +34,6 @@ void Sampler::AddStep(Step* step) {
 }
 
 // Run sampler for a specific number of iterations.
-// number_of_iterations: Number of iterations to run sampler.
-// progress: Display a progress bar.
 void Sampler::Iterate(int number_of_iterations, bool progress) {
 	if(progress) {
 		boost::progress_display show_progress(number_of_iterations);
@@ -263,10 +255,4 @@ bool read_from_file(std::string filename)
         file.close();
     }
     return open_flag;
-}
-
-// Function to test if two doubles are within the machine precision of each other.
-bool approx_equal(double a, double b)
-{
-    return abs(a - b) <= std::numeric_limits<double>::epsilon() ? true : false;
 }

@@ -24,10 +24,6 @@ extern boost::random::mt19937 rng;
 // instantiated in steps.cpp
 extern RandomGenerator RandGen;
 
-/******************************************************************
- PARAMETER CLASSES
- *****************************************************************/
-
 // This is the base Parameter class. It is abstract, so it should
 // never be instantiated directly. Users should subclass the Parameter class,
 // not BaseParameter class as the parameter value type is not specified in the
