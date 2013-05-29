@@ -9,6 +9,7 @@
 #define CATCH_CONFIG_MAIN
 #include <catch.hpp>
 #include "samplers.hpp"
+#include <boost/lexical_cast.hpp>
 
 // Externally-defined random number generator object, instantiated in random.cpp
 extern boost::random::mt19937 rng;
@@ -725,6 +726,117 @@ TEST_CASE("samplers/RAM_bivariate_sampler", "Test the MCMC sampler for a bivaria
     // make sure true values are contained within 99% credibility region
     arma::vec mu_centered = post_mean - mu0;
     double zsqr = arma::as_scalar(mu_centered.t() * arma::inv(post_covar) * mu_centered);
-    std::cout << "zsqr: " << zsqr << std::endl;
     REQUIRE(zsqr < 9.21);
 }
+
+TEST_CASE("samplers/RAM_exchange_bivariate_sampler", "Test the MCMC sampler for a bivariate normal model using the Robust Adaptive Metropolis algorithm and Parallel tempering.")
+{
+    arma::mat covar(2,2);
+    covar << 2.3 << -0.6 << arma::endr << -0.6 << 0.8 << arma::endr;
+    arma::vec mu0(2);
+    mu0 << 4.5 << -9.0;
+    
+    // Generate some data
+    unsigned int ndata = 1000;
+    arma::mat data(ndata,2);
+    for (int i=0; i<ndata; i++) {
+        data.row(i) = arma::trans(mu0 + RandGen.normal(covar));
+    }
+    
+    // prior parameters
+    arma::vec prior_mean(2);
+    prior_mean << 0.0 << 0.0;
+    arma::mat prior_var(2,2);
+    prior_var << 100.0 << 0.0 << arma::endr << 0.0 << 100.0 << arma::endr;
+    
+    // ensemble parameters
+    int nchains = 10;
+    Ensemble<BiMu> BiMuEnsemble;
+    double max_temperature = 100.0;
+    arma::vec temp_ladder = arma::linspace<arma::vec>(0.0, log(max_temperature), nchains);
+    temp_ladder = arma::exp(temp_ladder);
+    
+    // build the ensemble of parameter objects
+    for (int j=0; j<nchains; j++) {
+        std::string parname = "mu_" + boost::lexical_cast<std::string>(j);
+        BiMuEnsemble.AddObject(new BiMu(false, parname, covar, data, temp_ladder(j)));
+        BiMuEnsemble[j].SetPrior(prior_mean, prior_var);
+    }
+    
+    StudentProposal UnitProp(8.0, 1.0);
+    
+    // setup MCMC parameters
+    int sample_size = 100000;
+    int nthin = 1;
+    int burnin = 10000;
+    int report_iter = burnin + nthin * sample_size;
+
+    // Instantiate MCMC sampler object
+    Sampler normal_model(sample_size, burnin, nthin);
+    
+    // RAM step parameters
+    double target_rate = 0.4;
+    arma::mat prop_covar(2,2);
+    prop_covar.eye();
+    int maxiter = burnin;
+    
+    // Add the steps to the sampler, starting with the hottest chain first
+    for (int j=nchains-1; j>0; j--) {
+        // First add Robust Adaptive Metropolis Step
+        normal_model.AddStep( new AdaptiveMetro(BiMuEnsemble[j], UnitProp, prop_covar,
+                                                target_rate, maxiter) );
+        // Now add Exchange steps
+        normal_model.AddStep( new ExchangeStep<arma::vec, BiMu>(BiMuEnsemble[j], j, BiMuEnsemble, report_iter) );
+    }
+    
+    // Make sure we set this parameter in the coolest chain (the one corresponding to the posterior) to be tracked
+    BiMuEnsemble[0].SetTracking(true);
+    // Add in coolest chain. This is the chain that is actually moving in the posterior.
+    normal_model.AddStep( new AdaptiveMetro(BiMuEnsemble[0], UnitProp, prop_covar, target_rate, maxiter) );
+    
+    // Make sure the parameter named "mu_0" is tracked)
+    std::set<std::string> tracked_names = normal_model.GetTrackedNames();
+    REQUIRE(tracked_names.size() == 1);
+    std::set<std::string>::iterator mu_it;
+    mu_it = tracked_names.find(BiMuEnsemble[0].Label());
+    REQUIRE(mu_it != tracked_names.end());
+    REQUIRE(*mu_it == "mu_0");
+    
+    // Make sure the map of pointers to the parameter objects points to the correct object
+    std::map<std::string, BaseParameter*> p_tracked_params = normal_model.GetTrackedParams();
+    REQUIRE(p_tracked_params.size() == 1);
+    std::map<std::string, BaseParameter*>::iterator mu_it2 = p_tracked_params.find(BiMuEnsemble[0].Label());
+    REQUIRE(mu_it2 != p_tracked_params.end());
+    REQUIRE(p_tracked_params[BiMuEnsemble[0].Label()]->Label() == "mu_0");
+    REQUIRE(p_tracked_params[BiMuEnsemble[0].Label()]->GetTemperature() == 1.0);
+    
+    // Run the sampler
+    normal_model.Run();
+    
+    // Grab the sampled parameter values
+    std::vector<arma::vec> samples0 = BiMuEnsemble[0].GetSamples();
+    
+    // convert to armadillo library vector
+    arma::vec mu1_samples(sample_size);
+    arma::vec mu2_samples(sample_size);
+    for (int i=0; i<sample_size; i++) {
+        mu1_samples[i] = samples0[i](0);
+        mu2_samples[i] = samples0[i](1);
+    }
+    
+    arma::vec post_mean(2);
+    post_mean(0) = arma::mean(mu1_samples);
+    post_mean(1) = arma::mean(mu2_samples);
+    
+    arma::mat post_covar(2,2);
+    post_covar(0,0) = arma::var(mu1_samples);
+    post_covar(1,1) = arma::var(mu2_samples);
+    post_covar(0,1) = arma::as_scalar(arma::cov(mu1_samples, mu2_samples));
+    post_covar(1,0) = post_covar(0,1);
+    
+    // make sure true values are contained within 99% credibility region
+    arma::vec mu_centered = post_mean - mu0;
+    double zsqr = arma::as_scalar(mu_centered.t() * arma::inv(post_covar) * mu_centered);
+    REQUIRE(zsqr < 9.21);
+}
+
