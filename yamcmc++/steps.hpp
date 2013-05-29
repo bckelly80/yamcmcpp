@@ -65,6 +65,9 @@ public:
 	virtual bool ParameterTrack() {
 		return true;
 	}
+    
+    // Return a pointer to the parameter
+    virtual BaseParameter* GetParPointer() = 0;
 };
 
 
@@ -101,7 +104,7 @@ public:
 	}
     
     // Return a pointer to the parameter
-    Parameter<ParValueType>* GetParPointer() {
+    BaseParameter* GetParPointer() {
         return &parameter_;
     }
 	
@@ -205,7 +208,7 @@ public:
     }
     
     // Return a pointer to the parameter
-    Parameter<ParValueType>* GetParPointer() {
+    BaseParameter* GetParPointer() {
         return &parameter_;
     }
 private:
@@ -282,7 +285,7 @@ public:
     }
     
     // Return a pointer to the parameter
-    Parameter<arma::vec>* GetParPointer() {
+    BaseParameter* GetParPointer() {
         return &parameter_;
     }
 	
@@ -398,7 +401,7 @@ public:
     }
     
     // Return a pointer to the parameter
-    Parameter<ParValueType>* GetParPointer() {
+    BaseParameter* GetParPointer() {
         return &parameter_;
     }
     

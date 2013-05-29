@@ -624,6 +624,11 @@ TEST_CASE("samplers/metropolis_uni_sampler", "Test the MCMC sampler for a univar
     
     // Make sure the map of pointers to the parameter objects points to the correct object
     std::map<std::string, BaseParameter*> p_tracked_params = normal_model.GetTrackedParams();
+    REQUIRE(p_tracked_params.size() == 1);
+    std::map<std::string, BaseParameter*>::iterator mu_it2 = p_tracked_params.find(NormMean.Label());
+    REQUIRE(mu_it2 != p_tracked_params.end());
+    REQUIRE(p_tracked_params[NormMean.Label()]->Label() == "mu");
+    REQUIRE(p_tracked_params[NormMean.Label()]->GetTemperature() == 1.0);
     
     // Run the sampler
     normal_model.Run();
@@ -634,5 +639,6 @@ TEST_CASE("samplers/metropolis_uni_sampler", "Test the MCMC sampler for a univar
     double post_mean = arma::mean(samples);
     double post_var = arma::var(samples);
     double zscore = std::abs(post_mean - mu0) / sqrt(post_var);
+    std::cout << "zscore: " << zscore << std::endl;
     REQUIRE(zscore < 3.0);
 }
