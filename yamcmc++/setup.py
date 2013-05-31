@@ -12,14 +12,16 @@ extension_url     = "https://github.com/bckelly80/yamcmcpp"
 
 BOOST_DIR         = os.environ["BOOST_DIR"]
 ARMADILLO_DIR     = os.environ["ARMADILLO_DIR"]
-include_dirs      = ["/usr/include/", BOOST_DIR+"/include", ARMADILLO_DIR+"/include", numpy.distutils.misc_util.get_numpy_include_dirs()]
-library_dirs      = ["/usr/lib64/", "/usr/lib/", BOOST_DIR+"/lib", ARMADILLO_DIR+"/lib"]
+include_dirs      = [BOOST_DIR+"/include", ARMADILLO_DIR+"/include", "/usr/include/"]
+for include_dir in numpy.distutils.misc_util.get_numpy_include_dirs():
+    include_dirs.append(include_dir)
+library_dirs      = [BOOST_DIR+"/lib", ARMADILLO_DIR+"/lib64", "/usr/lib64/", "/usr/lib/"]
 
 # define the libraries to link with the boost python library
-libraries = [ "boost_python", "lapack", "blas"]
+libraries = [ "boost_python", "boost_filesystem", "boost_system", "armadillo"]
 
 # define the source files for the extension
-source_files = [ "boost_python_wrapper.cpp", "random.cpp" ]
+source_files = [ "boost_python_wrapper.cpp", "proposals.cpp", "random.cpp", "samplers.cpp", "steps.cpp" ]
  
 # create the extension and add it to the python distribution
 setup( name=extension_name, 
