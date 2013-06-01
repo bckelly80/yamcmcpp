@@ -1,3 +1,7 @@
+#ifndef BOOST_SYSTEM_NO_DEPRECATED
+#define BOOST_SYSTEM_NO_DEPRECATED 1
+#endif
+
 #include <boost/python.hpp>
 #include <armadillo>
 #include <string>
@@ -9,12 +13,12 @@
 #include "samplers.hpp" 
 #include "steps.hpp"
 
+
 using namespace boost::python;
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(univariateNormal, RandomGenerator::normal, 0, 2)
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(uniformDouble, RandomGenerator::uniform, 0, 2)
-
 
 // generate wrapper code for the classes
 BOOST_PYTHON_MODULE(_yamcmcpp){
@@ -22,45 +26,53 @@ BOOST_PYTHON_MODULE(_yamcmcpp){
     // constructors!
 
     // Parameters:
-    // Needed for virtual functions of this base class
-    /*
-    struct BaseParameterWrap : BaseParameter, wrapper<BaseParameter>
+
+    // Parameter is templated.  I believe we need explicit
+    // instantiations.  For now use use arma::vec.
+    // If you want to get serious, look at:
+    // http://boost.2283326.n4.nabble.com/C-sig-Problem-with-Templated-class-and-Boost-python-td2697861.html
+    struct ParameterWrap : Parameter<arma::vec>, wrapper<Parameter<arma::vec> >
     {
-        std::string StringValue()
+        // Pure virtual functions
+        arma::vec StartingValue() { return this->get_override("StartingValue")(); }
+        
+        // Virtual functions with default implementations
+        double LogDensity(arma::vec value)
         {
-            if (override StringValue = this->get_override("StringValue"))
-                return StringValue();
-            return BaseParameter::StringValue();
+            if (override LogDensity = this->get_override("LogDensity"))
+                return LogDensity(value);
+            return Parameter<arma::vec>::LogDensity(value);
         }
-        std::string default_StringValue() { return this->BaseParameter::StringValue(); }
+        double default_LogDensity(arma::vec value) { return this->Parameter<arma::vec>::LogDensity(value); }        
 
-        void SetSampleSize() 
+        arma::vec RandomPosterior()
         {
-            this->get_override("SetSampleSize")();
+            if (override RandomPosterior = this->get_override("RandomPosterior"))
+                return RandomPosterior();
+            return Parameter<arma::vec>::RandomPosterior();
         }
+        arma::vec default_RandomPosterior() { return this->Parameter<arma::vec>::RandomPosterior(); }        
 
-        void AddToSample() 
+        void Save(arma::vec new_value)
         {
-            this->get_override("AddToSample")();
+            if (override Save = this->get_override("Save"))
+                Save(new_value);
+            Parameter<arma::vec>::Save(new_value);
         }
+        void default_Save(arma::vec new_value) { this->Parameter<arma::vec>::Save(new_value); }        
     };
-    class_<BaseParameterWrap, boost::noncopyable>("BaseParameter")
-        .def("StringValue", &BaseParameter::StringValue, &BaseParameterWrap::default_StringValue)
-        .def("SetSampleSize", pure_virtual(&BaseParameter::SetSampleSize))
-        .def("AddToSample", pure_virtual(&BaseParameter::AddToSample))
-        //.def(init<bool,std::string>())
-        //.def(init<bool,std::string,double>())
-        //.def("GetLogDensity", &BaseParameter::GetLogDensity )
-        //.def("SetLogDensity", &BaseParameter::SetLogDensity )
-        //.def("GetTemperature", &BaseParameter::GetTemperature )
-        //.def("Track", &BaseParameter::Track )
-        //.def("SetTracking", &BaseParameter::SetTracking )
-        //.def("Label", &BaseParameter::Label )
-        ;
-    */
 
+    class_<ParameterWrap, bases<BaseParameter>, boost::noncopyable>("Parameter")
+        .def("StartingValue", pure_virtual(&Parameter<arma::vec>::StartingValue))        
+        ;
+
+        //.def("LogDensity", &Parameter<arma::vec>::LogDensity, &ParameterWrap::default_LogDensity)
+        //.def("RandomPosterior", &Parameter<arma::vec>::RandomPosterior, &ParameterWrap::default_RandomPosterior)
+        //.def("Save", &Parameter<arma::vec>::Save, &ParameterWrap::default_Save)
+        //;
     /*
-    class_<Parameter>("Parameter",init<bool,std::string,double>())
+    class_<Parameter, bases<BaseParameter> >("Parameter", no_init)
+        .def(init<bool,std::string,double>())
         .def("StartingValue", &Parameter::StartingValue )
         .def("LogDensity", &Parameter::LogDensity )
         .def("RandomPosterior", &Parameter::RandomPosterior )
@@ -73,7 +85,7 @@ BOOST_PYTHON_MODULE(_yamcmcpp){
     */
 
     // Proposals:
-
+    /*
     class_<NormalProposal, bases<Proposal<double> > >("NormalProposal",init<>())
         .def(init<double>())
         .def("Draw", &NormalProposal::Draw )
@@ -94,6 +106,8 @@ BOOST_PYTHON_MODULE(_yamcmcpp){
         .def("Draw", &LogNormalProposal::Draw )
         .def("LogDensity", &LogNormalProposal::LogDensity )
         ;
+    */
+
     /* PROBLEM WITH TEMPLATED CLASSES
     class_<StretchProposal<Parameter>, bases<EnsembleProposal<arma::vec,Parameter> > >("StretchProposal<Parameter>",init<>())
         .def(init<Ensemble<Parameter>,int,double>())
