@@ -840,3 +840,159 @@ TEST_CASE("samplers/RAM_exchange_bivariate_sampler", "Test the MCMC sampler for 
     REQUIRE(zsqr < 9.21);
 }
 
+// Define class for univariate normal mean parameter
+class NormalMean : public Parameter<double> {
+public:
+	// Constructor
+	NormalMean(bool track, std::string name, arma::vec& data, double temperature=1.0) :
+    Parameter<double>(track, name, temperature), data_(data)
+    {
+        data_mean_ = arma::mean(data_);
+    }
+    
+    // Generate a random draw of the mean from its posterior
+	double RandomPosterior() {
+        double condvar = 1.0 / (1.0 / prior_var_ + data_.size() / SigSqr_->Value());
+        double condmean = condvar * (prior_mean_ / prior_var_ + data_.size() * data_mean_ / SigSqr_->Value());
+        double cond_sigma = sqrt(condvar);
+        return RandGen.normal(condmean, cond_sigma);
+    }
+    // Generate the initial value for mu by drawing from its posterior
+	double StartingValue() {
+        double initial_mu = data_mean_ + arma::stddev(data_) / sqrt(data_.size()) * RandGen.normal();
+        return initial_mu;
+    }
+ 	// Prior is normal
+	void SetPrior(double prior_mean, double prior_var) {
+        prior_mean_ = prior_mean;
+        prior_var_ = prior_var;
+    }
+    // Set the pointer to the normal variance parameter object
+    void SetNormVar(Parameter<double>* SigSqr) {
+        SigSqr_ = SigSqr;
+    }
+    
+private:
+    Parameter<double>* SigSqr_;
+    double data_mean_;
+    double sigsqr_;
+	double prior_mean_;
+	double prior_var_;
+    arma::vec& data_;
+};
+
+// Define class for univariate normal mean parameter
+class NormalVar : public Parameter<double> {
+public:
+	// Constructor
+	NormalVar(bool track, std::string name, arma::vec& data, double temperature=1.0) :
+    Parameter<double>(track, name, temperature), data_(data) {}
+    
+    // Generate a random draw of the mean from its posterior
+	double RandomPosterior() {
+        double dof = prior_dof_ + data_.n_elem;
+        arma::vec data_cent = data_ - Mu_->Value();
+        double data_ssqr = arma::mean(data_cent % data_cent);
+        double ssqr = (prior_dof_ * prior_ssqr_ + data_.n_elem * data_ssqr) / dof;
+        return RandGen.scaled_inverse_chisqr(dof, ssqr);
+    }
+    
+    // Generate the initial value for mu by drawing from its posterior
+	double StartingValue() {
+        double initial_var = RandGen.scaled_inverse_chisqr(data_.n_elem, arma::var(data_));
+        return initial_var;
+    }
+
+	// Prior is normal
+	void SetPrior(double prior_dof, double prior_ssqr) {
+        prior_dof_ = prior_dof;
+        prior_ssqr_ = prior_ssqr;
+    }
+    // Set the pointer to the normal variance parameter object
+    void SetNormMean(Parameter<double>* NormMean) {
+        Mu_ = NormMean;
+    }
+    
+private:
+    Parameter<double>* Mu_;
+	double prior_dof_;
+	double prior_ssqr_;
+    arma::vec& data_;
+};
+
+
+TEST_CASE("samplers/gibbs_sampler", "Test the Gibbs sampler for a normal model.") {
+    double sigma0 = 2.3;
+    double mu0 = 6.7;
+    double prior_mu = -1.0;
+    double prior_var = 10.0;
+    double prior_dof = 10.0;
+    double prior_ssqr = 10.0;
+    
+    // Generate some data
+    unsigned int ndata = 1000;
+    arma::vec data(ndata);
+    data.randn();
+    data *= sigma0;
+    data += mu0;
+    
+    // setup MCMC options
+    int sample_size = 100000;
+    int burnin = 10000;
+    Sampler normal_model(sample_size, burnin);
+
+    // Instantiate MCMC objects needed for MCMC Sampler
+    NormalMean Mu(true, "mu", data);
+    NormalVar SigSqr(true, "sigsqr", data);
+    Mu.SetPrior(prior_mu, prior_var);
+    Mu.SetNormVar(&SigSqr);
+    SigSqr.SetPrior(prior_dof, prior_ssqr);
+    SigSqr.SetNormMean(&Mu);
+    
+    // Add the Gibbs steps to the MCMC sampler
+    normal_model.AddStep(new GibbsStep<double>(Mu));
+    normal_model.AddStep(new GibbsStep<double>(SigSqr));
+    
+    // Make sure the parameters named "mu" and "sigsqr" are tracked
+    std::set<std::string> tracked_names = normal_model.GetTrackedNames();
+    REQUIRE(tracked_names.size() == 2);
+    std::set<std::string>::iterator parameter_it;
+    parameter_it = tracked_names.find(Mu.Label());
+    REQUIRE(parameter_it != tracked_names.end());
+    REQUIRE(*parameter_it == Mu.Label());
+    parameter_it = tracked_names.find(SigSqr.Label());
+    REQUIRE(parameter_it != tracked_names.end());
+    REQUIRE(*parameter_it == SigSqr.Label());
+    
+    // Make sure the map of pointers to the parameter objects points to the correct object
+    std::map<std::string, BaseParameter*> p_tracked_params = normal_model.GetTrackedParams();
+    REQUIRE(p_tracked_params.size() == 2);
+    std::map<std::string, BaseParameter*>::iterator parameter_it2 = p_tracked_params.find(Mu.Label());
+    REQUIRE(parameter_it2 != p_tracked_params.end());
+    REQUIRE(p_tracked_params[Mu.Label()]->Label() == "mu");
+    REQUIRE(p_tracked_params[Mu.Label()]->GetTemperature() == 1.0);
+    parameter_it2 = p_tracked_params.find(SigSqr.Label());
+    REQUIRE(parameter_it2 != p_tracked_params.end());
+    REQUIRE(p_tracked_params[SigSqr.Label()]->Label() == "sigsqr");
+    REQUIRE(p_tracked_params[SigSqr.Label()]->GetTemperature() == 1.0);
+    
+    // Run the sampler
+    normal_model.Run();
+    
+    // Grab the sampled parameter values
+    std::vector<double> mu_samples0 = Mu.GetSamples();
+    std::vector<double> var_samples0 = SigSqr.GetSamples();
+    arma::vec mu_samples(mu_samples0); // convert to armadillo library vector
+    arma::vec var_samples(var_samples0);
+    
+    // Make sure they are within 3sigma of their true values
+    double mu_post_mean = arma::mean(mu_samples);
+    double mu_post_var = arma::var(mu_samples);
+    double zscore = std::abs(mu_post_mean - mu0) / sqrt(mu_post_var);
+    REQUIRE(zscore < 3.0);
+    
+    double var_post_mean = arma::mean(var_samples);
+    double var_post_var = arma::var(var_samples);
+    zscore = std::abs(var_post_mean - sigma0 * sigma0) / sqrt(var_post_var);
+    REQUIRE(zscore < 3.0);
+}
