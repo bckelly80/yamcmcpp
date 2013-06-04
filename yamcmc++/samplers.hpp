@@ -82,7 +82,7 @@ public:
     Sampler(int sample_size, int burnin, int thin=1) : sample_size_(sample_size), burnin_(burnin), thin_(thin) {};
 	
     // Method to add Step to Sampler execution stack.
-    void AddStep(Step* step);
+    void AddStep(boost::shared_ptr<Step> step);
 	
     // Run sampler for a specific number of iterations.
     void Iterate(int number_of_iterations, bool progress = false);
@@ -118,7 +118,7 @@ protected:
     int current_iter_;
     int burnin_;
     int thin_;
-    boost::ptr_vector<Step> steps_;
+    std::vector<boost::shared_ptr<Step> > steps_;
     std::map<std::string, BaseParameter*> p_tracked_parameters_;
     std::set<std::string> tracked_names_;
 };

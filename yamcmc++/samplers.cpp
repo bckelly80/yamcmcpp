@@ -12,6 +12,7 @@
  */
 
 // local includes
+#include <boost/shared_ptr.hpp>
 #include "samplers.hpp"
 
 // Global random number generator object, instantiated in random.cpp
@@ -21,15 +22,15 @@ extern boost::random::mt19937 rng;
 extern RandomGenerator RandGen;
 
 // Add Step to Sampler stack.
-void Sampler::AddStep(Step* step) {
+void Sampler::AddStep(boost::shared_ptr<Step> step) {
 	// Add step to step stack.
 	steps_.push_back(step);
 
-    if (steps_.back().ParameterTrack()) {
+    if (steps_.back()->ParameterTrack()) {
         // Add parameter name to tracking stack
-        std::string par_label = steps_.back().ParameterLabel();
+        std::string par_label = steps_.back()->ParameterLabel();
         tracked_names_.insert(par_label);
-        p_tracked_parameters_[par_label] = steps_.back().GetParPointer();
+        p_tracked_parameters_[par_label] = steps_.back()->GetParPointer();
     }
 }
 
@@ -39,7 +40,7 @@ void Sampler::Iterate(int number_of_iterations, bool progress) {
 		boost::progress_display show_progress(number_of_iterations);
 		for(int iter = 0; iter < number_of_iterations; ++iter) {
 			for(int i = 0; i < steps_.size(); ++i) {
-				steps_[i].DoStep();
+				steps_[i]->DoStep();
 			}
 			++show_progress;
 		}
@@ -47,7 +48,7 @@ void Sampler::Iterate(int number_of_iterations, bool progress) {
 	else {
 		for(int iter = 0; iter < number_of_iterations; ++iter) {
 			for(int i = 0; i < steps_.size(); ++i) {
-				steps_[i].DoStep();
+				steps_[i]->DoStep();
 			}
 		}
 	}
@@ -73,7 +74,7 @@ void Sampler::Run() {
 	// Setting starting value:
 	std::cout << "Setting starting values..." << std::endl;
 	for (int i = 0; i < steps_.size(); ++i) {
-		steps_[i].Start();
+		steps_[i]->Start();
 	}
 	
 	// Burn in

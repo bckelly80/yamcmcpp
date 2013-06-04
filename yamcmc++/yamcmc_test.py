@@ -3,6 +3,23 @@ import sys
 sys.path.append("src")
 import _yamcmcpp
 
+class Theta(_yamcmcpp.Parameter):
+    def __init__(self, track, name, temperature=1.0):
+        _yamcmcpp.Parameter.__init__(self, track, name, temperature)
+        
+        self._data = None
+        self._ndata = 0
+
+    def setData(self, data):
+        self._data = data
+        self._ndata = len(data)
+
+    def setPrior(self, pmean, pvar, palpha, pbeta):
+        self._pmean = pmean
+        self._pvar = pvar
+        self._palpha = palpha
+        self._pbeta = pbeta
+
 def test_ensemble_mcmc():
 
     RandGen   = _yamcmcpp.RandomGenerator()
@@ -16,13 +33,21 @@ def test_ensemble_mcmc():
     simulated_data = np.array(simulated_data)
     print simulated_data
 
-    theta = _yamcmcpp.Theta(True, "theta = (mu,sigsqr)")
-    theta.SetData(simulated_data, nsample);
+    theta = Theta(True, "theta = (mu,sigsqr)")
+    theta.setData(simulated_data);
     prior_mean     = 0.0
     prior_variance = 1.0e6
     prior_alpha    = 0.0
     prior_beta     = 0.0
-    theta.SetPrior(prior_mean, prior_variance, prior_alpha, prior_beta)
+    theta.setPrior(prior_mean, prior_variance, prior_alpha, prior_beta)
+    print theta
+
+    covariance = np.identity((2))
+    covariance *= 1e-2
+    print covariance
+
+    thetaProp = _yamcmcpp.NormalProposal(1.0)
+    print thetaProp
 
 if __name__ == "__main__":
     test_ensemble_mcmc()
