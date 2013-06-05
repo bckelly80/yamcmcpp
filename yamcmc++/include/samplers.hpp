@@ -49,6 +49,25 @@ struct MCMCOptions {
 	std::string data_file;
 	/// Out file to save parameter chains.
 	std::string out_file;
+
+    int getSampleSize() { return sample_size; }
+    void setSampleSize(int s) {sample_size = s;}
+    
+    int getThin() { return thin; }
+    void setThin(int t) {thin = t;}
+    
+    int getBurnin() { return burnin; }
+    void setBurnin(int b) {burnin = b;}
+
+    int getChains() { return chains; }
+    void setChains(int c) {chains = c;}
+
+    std::string getDataFileName() { return data_file; }
+    void setDataFileName(std::string s) {data_file = s;}
+
+    std::string getOutFileName() { return out_file; }
+    void setOutFileName(std::string s) {out_file = s;}
+   
 };
 
 /********************
@@ -82,7 +101,7 @@ public:
     Sampler(int sample_size, int burnin, int thin=1) : sample_size_(sample_size), burnin_(burnin), thin_(thin) {};
 	
     // Method to add Step to Sampler execution stack.
-    void AddStep(boost::shared_ptr<Step> step);
+    void AddStep(Step* step);
 	
     // Run sampler for a specific number of iterations.
     void Iterate(int number_of_iterations, bool progress = false);
@@ -118,7 +137,7 @@ protected:
     int current_iter_;
     int burnin_;
     int thin_;
-    std::vector<boost::shared_ptr<Step> > steps_;
+    boost::ptr_vector<Step> steps_;
     std::map<std::string, BaseParameter*> p_tracked_parameters_;
     std::set<std::string> tracked_names_;
 };

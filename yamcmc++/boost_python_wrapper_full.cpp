@@ -110,7 +110,7 @@ private:
 
 
 // generate wrapper code for the classes
-BOOST_PYTHON_MODULE(_yamcmcpp){
+BOOST_PYTHON_MODULE(yamcmcpp){
     // declare the classes to wrap. remember to exposure all
     // constructors!
 

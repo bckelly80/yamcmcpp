@@ -23,7 +23,8 @@ libraries = [ "boost_python", "boost_filesystem", "boost_system", "armadillo"]
 # define the source files for the extension
 #
 # NOTE: Only have wrapped some of the routines here in boost python,
-# leave in for now for reference.
+# Some outstanding issues have to do with references
+# vs. shared_pointers.  Out of scope for this initial integration.
 #
 source_files = [ "boost_python_wrapper.cpp", "proposals.cpp", "random.cpp", "samplers.cpp", "steps.cpp" ]
  
