@@ -11,7 +11,7 @@
 #include <iostream>
 #include <fstream>
 // Local include
-#include "random.hpp"
+#include "include/random.hpp"
 
 // Global random number generator. This same generator should be used for
 // generating all random variates for a MCMC sampler. The default random

@@ -13,7 +13,7 @@
 
 // local includes
 #include <boost/shared_ptr.hpp>
-#include "samplers.hpp"
+#include "include/samplers.hpp"
 
 // Global random number generator object, instantiated in random.cpp
 extern boost::random::mt19937 rng;

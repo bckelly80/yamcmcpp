@@ -11,10 +11,10 @@
 
 // Convenience header to load all the necessary header files to use yamcmc++.
 
-#include <yamcmc++_bits/random.hpp>
-#include <yamcmc++_bits/proposals.hpp>
-#include <yamcmc++_bits/samplers.hpp>
-#include <yamcmc++_bits/steps.hpp>
-#include <yamcmc++_bits/parameters.hpp>
+#include <include/random.hpp>
+#include <include/proposals.hpp>
+#include <include/samplers.hpp>
+#include <include/steps.hpp>
+#include <include/parameters.hpp>
 
 #endif

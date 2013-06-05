@@ -1,11 +1,11 @@
 import numpy as np
 import sys
 sys.path.append("src")
-import _yamcmcpp
+import yamcmcpp
 
-class Theta(_yamcmcpp.Parameter):
+class Theta(yamcmcpp.Parameter):
     def __init__(self, track, name, temperature=1.0):
-        _yamcmcpp.Parameter.__init__(self, track, name, temperature)
+        yamcmcpp.Parameter.__init__(self, track, name, temperature)
         
         self._data = None
         self._ndata = 0
@@ -20,9 +20,12 @@ class Theta(_yamcmcpp.Parameter):
         self._palpha = palpha
         self._pbeta = pbeta
 
+    def StartingValue(self):
+        return np.array(np.mean(self._data), np.variance(self._variance))
+
 def test_ensemble_mcmc():
 
-    RandGen   = _yamcmcpp.RandomGenerator()
+    RandGen   = yamcmcpp.RandomGenerator()
 
     true_mean = 3.4
     true_var  = 2.3
@@ -46,8 +49,13 @@ def test_ensemble_mcmc():
     covariance *= 1e-2
     print covariance
 
-    thetaProp = _yamcmcpp.NormalProposal(1.0)
+    thetaProp = yamcmcpp.NormalProposal(1.0)
     print thetaProp
+
+    burnin = 100
+    thin   = 1
+    normalSampler = yamcmcpp.Sampler(nsample, burnin, thin)
+    print normalSampler
 
 if __name__ == "__main__":
     test_ensemble_mcmc()

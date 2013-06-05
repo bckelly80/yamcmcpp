@@ -6,7 +6,7 @@ desc = open("README.rst").read()
 required = ["numpy"]
 
 # define the name of the extension to use
-extension_name    = "_yamcmcpp"
+extension_name    = "yamcmcpp"
 extension_version = "0.1.0"
 extension_url     = "https://github.com/bckelly80/yamcmcpp"
 
@@ -21,6 +21,10 @@ library_dirs      = [BOOST_DIR+"/lib", ARMADILLO_DIR+"/lib64", "/usr/lib64/", "/
 libraries = [ "boost_python", "boost_filesystem", "boost_system", "armadillo"]
 
 # define the source files for the extension
+#
+# NOTE: Only have wrapped some of the routines here in boost python,
+# leave in for now for reference.
+#
 source_files = [ "boost_python_wrapper.cpp", "proposals.cpp", "random.cpp", "samplers.cpp", "steps.cpp" ]
  
 # create the extension and add it to the python distribution

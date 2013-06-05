@@ -7,11 +7,11 @@
 #include <string>
 
 // include the headers for the wrapped functions and classes
-#include "parameters.hpp" 
-#include "proposals.hpp"
-#include "random.hpp"
-#include "samplers.hpp" 
-#include "steps.hpp"
+#include "include/parameters.hpp" 
+#include "include/proposals.hpp"
+#include "include/random.hpp"
+#include "include/samplers.hpp" 
+#include "include/steps.hpp"
 
 
 using namespace boost::python;
@@ -160,16 +160,6 @@ BOOST_PYTHON_MODULE(_yamcmcpp){
         .def("LogDensity", &LogNormalProposal::LogDensity )
         ;
 
-    /* PROBLEM WITH TEMPLATED CLASSES
-    class_<StretchProposal<Parameter>, bases<EnsembleProposal<arma::vec,Parameter> > >("StretchProposal<Parameter>",init<>())
-        .def(init<Ensemble<Parameter>,int,double>())
-        .def("SetScalingSupport", &StretchProposal<Parameter>::SetScalingSupport )
-        .def("GrabParameter", &StretchProposal<Parameter>::GrabParameter )
-        .def("Draw", &StretchProposal<Parameter>::Draw )
-        .def("LogDensity", &StretchProposal<Parameter>::LogDensity )
-        ;
-    */
-
     // Random
     class_<RandomGenerator>("RandomGenerator",init<>())
         .def("SetSeed", &RandomGenerator::SetSeed )
@@ -193,17 +183,6 @@ BOOST_PYTHON_MODULE(_yamcmcpp){
         .def("invgamma", &RandomGenerator::invgamma )
         ;
 
-    // Steps
-    class_<Step, StepWrap>("Step", no_init)
-        // Virtual methods
-        .def("DoStep", &StepWrap::DoStep)
-        .def("Start", &StepWrap::Start)
-        //.def("GetParPointer", &StepWrap::GetParPointer)
-        .def("ParameterLabel", &Step::ParameterLabel, &StepWrap::default_ParameterLabel)
-        .def("ParameterValue", &Step::ParameterValue, &StepWrap::default_ParameterValue)
-        .def("ParameterTrack", &Step::ParameterTrack, &StepWrap::default_ParameterTrack)
-        ;
-
     // Samplers
     class_<Sampler>("Sampler",init<int,int,int>())
         .def("AddStep", &Sampler::AddStep)
@@ -215,4 +194,24 @@ BOOST_PYTHON_MODULE(_yamcmcpp){
         .def("GetTrackedParams", &Sampler::GetTrackedParams)
         ;
 
+    // Steps
+    /*
+    class_<Step, StepWrap>("Step", no_init)
+        // Virtual methods
+        .def("DoStep", &StepWrap::DoStep)
+        .def("Start", &StepWrap::Start)
+        //.def("GetParPointer", &StepWrap::GetParPointer)
+        .def("ParameterLabel", &Step::ParameterLabel, &StepWrap::default_ParameterLabel)
+        .def("ParameterValue", &Step::ParameterValue, &StepWrap::default_ParameterValue)
+        .def("ParameterTrack", &Step::ParameterTrack, &StepWrap::default_ParameterTrack)
+        ;
+    */
+
+    /*
+    class_<AdaptiveMetro>("AdaptiveMetro", init<boost::shared_ptr<Parameter<arma::vec> >,
+                          boost::shared_ptr<Proposal<double> >,arma::mat,double,int>())
+        .def("Start", &AdaptiveMetro::Start)
+        ;
+    */       
+   
 }
