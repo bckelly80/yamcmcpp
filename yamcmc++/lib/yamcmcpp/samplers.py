@@ -6,7 +6,7 @@ __author__ = 'Brandon C. Kelly'
 
 import numpy as np
 from matplotlib import pyplot as plt
-from statsmodels.tsa import arima_process, arima_model
+#from statsmodels.tsa import arima_process, arima_model
 
 
 class MCMCSample(object):

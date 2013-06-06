@@ -1,10 +1,10 @@
-all: yamcmcpp
+all: yamcmcppLib
 
-yamcmcpp: force
+yamcmcppLib: force
 	CFLAGS="-O3" python setup.py build_ext --inplace
 
 clean:
-	rm -rf build src/*.pyc src/yamcmcpp.so
+	rm -rf build lib/yamcmcpp/*.pyc lib/yamcmcpp/yamcmcppLib.so
 
 force:
 	true

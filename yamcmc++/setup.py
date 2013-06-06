@@ -6,7 +6,7 @@ desc = open("README.rst").read()
 required = ["numpy"]
 
 # define the name of the extension to use
-extension_name    = "yamcmcpp"
+extension_name    = "yamcmcppLib"
 extension_version = "0.1.0"
 extension_url     = "https://github.com/bckelly80/yamcmcpp"
 
@@ -36,7 +36,7 @@ setup( name=extension_name,
        author="Brandon Kelly and Andrew Becker",
        author_email="acbecker@gmail.com",
        packages=[extension_name],
-       package_dir = { "": "src" },
+       package_dir = { "": "lib/yamcmcpp" },
        url=extension_url,
        description="C++ version of Yet Another Markov Chain Monte Carlo sampler",
        long_description=desc,

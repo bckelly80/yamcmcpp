@@ -1,0 +1,10 @@
+setupRequired(boost)
+setupRequired(armadillo)
+setupRequired(numpy)
+setupRequired(matplotlib)
+
+setupOptional(statsmodels)
+
+envPrepend(LD_LIBRARY_PATH, ${PRODUCT_DIR}/lib)
+envPrepend(DYLD_LIBRARY_PATH, ${PRODUCT_DIR}/lib)
+envPrepend(PYTHONPATH, ${PRODUCT_DIR}/lib) 
