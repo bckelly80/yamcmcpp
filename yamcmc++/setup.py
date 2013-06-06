@@ -10,6 +10,8 @@ extension_name    = "yamcmcpp"
 extension_version = "0.1.0"
 extension_url     = "https://github.com/bckelly80/yamcmcpp"
 
+CFLAGS="-O3"
+
 BOOST_DIR         = os.environ["BOOST_DIR"]
 ARMADILLO_DIR     = os.environ["ARMADILLO_DIR"]
 include_dirs      = [BOOST_DIR+"/include", ARMADILLO_DIR+"/include", "/usr/include/"]
