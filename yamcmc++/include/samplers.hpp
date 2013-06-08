@@ -49,6 +49,25 @@ struct MCMCOptions {
 	std::string data_file;
 	/// Out file to save parameter chains.
 	std::string out_file;
+
+    int getSampleSize() { return sample_size; }
+    void setSampleSize(int s) {sample_size = s;}
+    
+    int getThin() { return thin; }
+    void setThin(int t) {thin = t;}
+    
+    int getBurnin() { return burnin; }
+    void setBurnin(int b) {burnin = b;}
+
+    int getChains() { return chains; }
+    void setChains(int c) {chains = c;}
+
+    std::string getDataFileName() { return data_file; }
+    void setDataFileName(std::string s) {data_file = s;}
+
+    std::string getOutFileName() { return out_file; }
+    void setOutFileName(std::string s) {out_file = s;}
+   
 };
 
 /********************

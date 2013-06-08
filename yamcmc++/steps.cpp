@@ -8,7 +8,7 @@
 
 #include <boost/timer.hpp>
 // Local includes
-#include "steps.hpp"
+#include "include/steps.hpp"
 
 // Global random number generator object, instantiated in random.cpp
 extern boost::random::mt19937 rng;

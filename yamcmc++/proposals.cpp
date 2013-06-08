@@ -7,7 +7,7 @@
 //
 
 // Local include
-#include "proposals.hpp"
+#include "include/proposals.hpp"
 
 // Global random number generator object, instantiated in random.cpp
 extern boost::random::mt19937 rng;
