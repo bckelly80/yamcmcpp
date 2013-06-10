@@ -12,6 +12,8 @@
 		554D0422173446EF00641704 /* random.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFAD64DC16E270E500B83426 /* random.cpp */; };
 		554D0423173446F200641704 /* samplers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFAD64DF16E2718700B83426 /* samplers.cpp */; };
 		554D0424173446F500641704 /* steps.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFAD64E216E271CA00B83426 /* steps.cpp */; };
+		55720BF817666CE2007FC115 /* boost_python_wrapper_full.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55720BEB17666CE2007FC115 /* boost_python_wrapper_full.cpp */; };
+		55720BF917666CE2007FC115 /* boost_python_wrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55720BEC17666CE2007FC115 /* boost_python_wrapper.cpp */; };
 		DF04553E174304AF008C2243 /* yamcmc_tests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF04553D174304AF008C2243 /* yamcmc_tests.cpp */; };
 		DF045540174304AF008C2243 /* yamcmc___unit_tests.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = DF04553F174304AF008C2243 /* yamcmc___unit_tests.1 */; };
 		DF04554417430F52008C2243 /* proposals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFAD64D916E2709300B83426 /* proposals.cpp */; };
@@ -52,21 +54,25 @@
 		554D041B173443AB00641704 /* libyamcmcpp.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libyamcmcpp.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		554D041F1734465400641704 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		554D04261734676700641704 /* yamcmc++.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = "yamcmc++.hpp"; sourceTree = "<group>"; };
+		55720BEB17666CE2007FC115 /* boost_python_wrapper_full.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = boost_python_wrapper_full.cpp; path = "yamcmc++/boost_python_wrapper_full.cpp"; sourceTree = "<group>"; };
+		55720BEC17666CE2007FC115 /* boost_python_wrapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = boost_python_wrapper.cpp; path = "yamcmc++/boost_python_wrapper.cpp"; sourceTree = "<group>"; };
+		55720BEE17666CE2007FC115 /* parameters.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = parameters.hpp; sourceTree = "<group>"; };
+		55720BEF17666CE2007FC115 /* proposals.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = proposals.hpp; sourceTree = "<group>"; };
+		55720BF017666CE2007FC115 /* random.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = random.hpp; sourceTree = "<group>"; };
+		55720BF117666CE2007FC115 /* samplers.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = samplers.hpp; sourceTree = "<group>"; };
+		55720BF217666CE2007FC115 /* steps.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = steps.hpp; sourceTree = "<group>"; };
+		55720BF517666CE2007FC115 /* __init__.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = __init__.py; sourceTree = "<group>"; };
+		55720BF617666CE2007FC115 /* samplers.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = samplers.py; sourceTree = "<group>"; };
+		55720BF717666CE2007FC115 /* setup.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; name = setup.py; path = "yamcmc++/setup.py"; sourceTree = "<group>"; };
 		DF04553B174304AF008C2243 /* yamcmc++_unit_tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "yamcmc++_unit_tests"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DF04553D174304AF008C2243 /* yamcmc_tests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = yamcmc_tests.cpp; sourceTree = "<group>"; };
 		DF04553F174304AF008C2243 /* yamcmc___unit_tests.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = "yamcmc___unit_tests.1"; sourceTree = "<group>"; };
-		DF72E5B3171CBE07008EFBBF /* parameters.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = parameters.hpp; sourceTree = "<group>"; };
 		DFAD64CD16E26FA100B83426 /* yamcmc++ */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "yamcmc++"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DFAD64D216E26FA100B83426 /* yamcmc__.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = yamcmc__.1; sourceTree = "<group>"; };
 		DFAD64D916E2709300B83426 /* proposals.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = proposals.cpp; sourceTree = "<group>"; };
-		DFAD64DA16E2709300B83426 /* proposals.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = proposals.hpp; sourceTree = "<group>"; };
 		DFAD64DC16E270E500B83426 /* random.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = random.cpp; sourceTree = "<group>"; };
-		DFAD64DD16E270E500B83426 /* random.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = random.hpp; sourceTree = "<group>"; };
 		DFAD64DF16E2718700B83426 /* samplers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = samplers.cpp; sourceTree = "<group>"; };
-		DFAD64E016E2718700B83426 /* samplers.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = samplers.hpp; sourceTree = "<group>"; };
 		DFAD64E216E271CA00B83426 /* steps.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = steps.cpp; sourceTree = "<group>"; };
-		DFAD64E316E271CA00B83426 /* steps.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = steps.hpp; sourceTree = "<group>"; };
-		DFAD64E516E2725900B83426 /* yamcmc_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yamcmc_test.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,6 +101,37 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		55720BED17666CE2007FC115 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				55720BEE17666CE2007FC115 /* parameters.hpp */,
+				55720BEF17666CE2007FC115 /* proposals.hpp */,
+				55720BF017666CE2007FC115 /* random.hpp */,
+				55720BF117666CE2007FC115 /* samplers.hpp */,
+				55720BF217666CE2007FC115 /* steps.hpp */,
+			);
+			name = include;
+			path = "yamcmc++/include";
+			sourceTree = "<group>";
+		};
+		55720BF317666CE2007FC115 /* lib */ = {
+			isa = PBXGroup;
+			children = (
+				55720BF417666CE2007FC115 /* yamcmcpp */,
+			);
+			name = lib;
+			path = "yamcmc++/lib";
+			sourceTree = "<group>";
+		};
+		55720BF417666CE2007FC115 /* yamcmcpp */ = {
+			isa = PBXGroup;
+			children = (
+				55720BF517666CE2007FC115 /* __init__.py */,
+				55720BF617666CE2007FC115 /* samplers.py */,
+			);
+			path = yamcmcpp;
+			sourceTree = "<group>";
+		};
 		DF04553C174304AF008C2243 /* yamcmc++_unit_tests */ = {
 			isa = PBXGroup;
 			children = (
@@ -107,6 +144,11 @@
 		DFAD64C416E26FA100B83426 = {
 			isa = PBXGroup;
 			children = (
+				55720BEB17666CE2007FC115 /* boost_python_wrapper_full.cpp */,
+				55720BEC17666CE2007FC115 /* boost_python_wrapper.cpp */,
+				55720BED17666CE2007FC115 /* include */,
+				55720BF317666CE2007FC115 /* lib */,
+				55720BF717666CE2007FC115 /* setup.py */,
 				554D041F1734465400641704 /* Accelerate.framework */,
 				DFAD64CF16E26FA100B83426 /* src */,
 				DF04553C174304AF008C2243 /* yamcmc++_unit_tests */,
@@ -129,15 +171,9 @@
 			children = (
 				DFAD64D216E26FA100B83426 /* yamcmc__.1 */,
 				DFAD64D916E2709300B83426 /* proposals.cpp */,
-				DFAD64DA16E2709300B83426 /* proposals.hpp */,
 				DFAD64DC16E270E500B83426 /* random.cpp */,
-				DFAD64DD16E270E500B83426 /* random.hpp */,
 				DFAD64DF16E2718700B83426 /* samplers.cpp */,
-				DFAD64E016E2718700B83426 /* samplers.hpp */,
 				DFAD64E216E271CA00B83426 /* steps.cpp */,
-				DFAD64E316E271CA00B83426 /* steps.hpp */,
-				DFAD64E516E2725900B83426 /* yamcmc_test.cpp */,
-				DF72E5B3171CBE07008EFBBF /* parameters.hpp */,
 				554D04261734676700641704 /* yamcmc++.hpp */,
 			);
 			name = src;
@@ -268,6 +304,8 @@
 				DFAD64DE16E270E500B83426 /* random.cpp in Sources */,
 				DFAD64E116E2718700B83426 /* samplers.cpp in Sources */,
 				DFAD64E416E271CA00B83426 /* steps.cpp in Sources */,
+				55720BF817666CE2007FC115 /* boost_python_wrapper_full.cpp in Sources */,
+				55720BF917666CE2007FC115 /* boost_python_wrapper.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
