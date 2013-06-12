@@ -7,7 +7,7 @@
 // include the headers for the wrapped functions and classes
 #include "include/samplers.hpp" 
 
-BOOST_PYTHON_MODULE(yamcmcppLib){
+BOOST_PYTHON_MODULE(_yamcmcpp){
     using namespace boost::python;
 
     class_<MCMCOptions>("MCMCOptions")

@@ -2,46 +2,41 @@ from distutils.core import setup, Extension
 import numpy.distutils.misc_util
 import os
 
-desc = open("README.rst").read()
-required = ["numpy"]
-
-# define the name of the extension to use
-extension_name    = "yamcmcppLib"
+desc              = open("README.rst").read()
 extension_version = "0.1.0"
 extension_url     = "https://github.com/bckelly80/yamcmcpp"
-
-CFLAGS="-O3"
-
+CFLAGS            = "-O3"
 BOOST_DIR         = os.environ["BOOST_DIR"]
 ARMADILLO_DIR     = os.environ["ARMADILLO_DIR"]
 include_dirs      = [BOOST_DIR+"/include", ARMADILLO_DIR+"/include", "/usr/include/"]
 for include_dir in numpy.distutils.misc_util.get_numpy_include_dirs():
     include_dirs.append(include_dir)
-library_dirs      = [BOOST_DIR+"/lib", ARMADILLO_DIR+"/lib64", "/usr/lib64/", "/usr/lib/"]
+library_dirs      = [BOOST_DIR+"/lib", ARMADILLO_DIR+"/lib", "/usr/lib64/", "/usr/lib/"]
 
-# define the libraries to link with the boost python library
-libraries = [ "boost_python", "boost_filesystem", "boost_system", "armadillo"]
+def configuration(parent_package='', top_path=None):
+    from numpy.distutils.misc_util import Configuration
+    
+    config = Configuration("yamcmcpp", parent_package, top_path)
+    config.version = extension_version
+    #config.add_subpackage("yamcmcpp")
+    config.add_data_dir((".", "yamcmcpp"))
+    config.add_installed_library(
+        "yamcmcpp", 
+        sources=["proposals.cpp", "random.cpp", "samplers.cpp", "steps.cpp" ], 
+        #include_dirs=include_dirs,
+        #library_dirs=library_dirs, 
+        #libraries=["armadillo"],
+        install_dir="../../")
+    config.add_extension(
+        "_yamcmcpp",
+        sources=["boost_python_wrapper.cpp", "samplers.cpp"],
+        include_dirs=include_dirs,
+        library_dirs=library_dirs, 
+        libraries=["boost_python", "boost_filesystem", "boost_system", "armadillo", "yamcmcpp"]
+    )
+    config.add_data_dir(("../../../../include", "include"))
+    return config
 
-# define the source files for the extension
-#
-# NOTE: Only have wrapped some of the routines here in boost python,
-# Some outstanding issues have to do with references
-# vs. shared_pointers.  Out of scope for this initial integration.
-#
-source_files = [ "boost_python_wrapper.cpp", "proposals.cpp", "random.cpp", "samplers.cpp", "steps.cpp" ]
- 
-# create the extension and add it to the python distribution
-setup( name=extension_name, 
-       version=extension_version, 
-       author="Brandon Kelly and Andrew Becker",
-       author_email="acbecker@gmail.com",
-       packages=[extension_name],
-       package_dir = { "": "lib/yamcmcpp" },
-       url=extension_url,
-       description="C++ version of Yet Another Markov Chain Monte Carlo sampler",
-       long_description=desc,
-       install_requires=required,
-       ext_modules=[Extension( extension_name, source_files, 
-                               include_dirs=include_dirs, 
-                               library_dirs=library_dirs, 
-                               libraries=libraries )] )
+if __name__ == '__main__':
+    from numpy.distutils.core import setup
+    setup(**configuration(top_path='').todict())

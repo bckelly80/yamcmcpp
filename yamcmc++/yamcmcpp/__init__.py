@@ -1,2 +1,2 @@
-from .yamcmcppLib import *
+from _yamcmcpp import *
 from samplers import MCMCSample
