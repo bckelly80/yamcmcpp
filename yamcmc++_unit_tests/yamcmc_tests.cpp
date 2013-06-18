@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 Brandon Kelly. All rights reserved.
 //
 
+// TODO: Test case when thin > 1
+
 #define CATCH_CONFIG_MAIN
 #include <catch.hpp>
 #include "include/samplers.hpp"
