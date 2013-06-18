@@ -342,6 +342,7 @@
 				"HEADER_SEARCH_PATHS[arch=*]" = (
 					/usr/local/include,
 					/usr/include,
+					/Library/Frameworks/EPD64.framework/Versions/Current/include/python2.7,
 				);
 				"LIBRARY_SEARCH_PATHS[arch=*]" = (
 					/usr/local/lib,
