@@ -141,3 +141,6 @@ Podfile.lock
 # Ignore PyCharm files
 .idea/
 __pychache__/
+
+#### bkelly's setup.py file
+setup_bkelly.py
