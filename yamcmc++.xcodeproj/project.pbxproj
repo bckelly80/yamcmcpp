@@ -67,12 +67,28 @@
 		DF04553B174304AF008C2243 /* yamcmc++_unit_tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "yamcmc++_unit_tests"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DF04553D174304AF008C2243 /* yamcmc_tests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = yamcmc_tests.cpp; sourceTree = "<group>"; };
 		DF04553F174304AF008C2243 /* yamcmc___unit_tests.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = "yamcmc___unit_tests.1"; sourceTree = "<group>"; };
+<<<<<<< HEAD
+=======
+		DFA01B0E1763FB04000DDE61 /* boost_python_wrapper_full.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = boost_python_wrapper_full.cpp; sourceTree = "<group>"; };
+		DFA01B0F1763FB04000DDE61 /* boost_python_wrapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = boost_python_wrapper.cpp; sourceTree = "<group>"; };
+>>>>>>> kelly-dev
 		DFAD64CD16E26FA100B83426 /* yamcmc++ */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "yamcmc++"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DFAD64D216E26FA100B83426 /* yamcmc__.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = yamcmc__.1; sourceTree = "<group>"; };
 		DFAD64D916E2709300B83426 /* proposals.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = proposals.cpp; sourceTree = "<group>"; };
 		DFAD64DC16E270E500B83426 /* random.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = random.cpp; sourceTree = "<group>"; };
 		DFAD64DF16E2718700B83426 /* samplers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = samplers.cpp; sourceTree = "<group>"; };
 		DFAD64E216E271CA00B83426 /* steps.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = steps.cpp; sourceTree = "<group>"; };
+<<<<<<< HEAD
+=======
+		DFF4A3CE1763EB3C009F86E1 /* parameters.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = parameters.hpp; sourceTree = "<group>"; };
+		DFF4A3CF1763EB3C009F86E1 /* proposals.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = proposals.hpp; sourceTree = "<group>"; };
+		DFF4A3D01763EB3C009F86E1 /* random.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = random.hpp; sourceTree = "<group>"; };
+		DFF4A3D11763EB3C009F86E1 /* samplers.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = samplers.hpp; sourceTree = "<group>"; };
+		DFF4A3D21763EB3C009F86E1 /* steps.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = steps.hpp; sourceTree = "<group>"; };
+		DFF4A3D51763EBF4009F86E1 /* __init__.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = __init__.py; sourceTree = "<group>"; };
+		DFF4A3D61763EBF4009F86E1 /* samplers.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = samplers.py; sourceTree = "<group>"; };
+		DFF4A3D71763EC14009F86E1 /* setup.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; name = setup.py; path = "yamcmc++/setup.py"; sourceTree = "<group>"; };
+>>>>>>> kelly-dev
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -144,12 +160,18 @@
 		DFAD64C416E26FA100B83426 = {
 			isa = PBXGroup;
 			children = (
+<<<<<<< HEAD
 				55720BEB17666CE2007FC115 /* boost_python_wrapper_full.cpp */,
 				55720BEC17666CE2007FC115 /* boost_python_wrapper.cpp */,
 				55720BED17666CE2007FC115 /* include */,
 				55720BF317666CE2007FC115 /* lib */,
 				55720BF717666CE2007FC115 /* setup.py */,
+=======
+				DFF4A3D71763EC14009F86E1 /* setup.py */,
+				DFF4A3D31763EBF4009F86E1 /* lib */,
+>>>>>>> kelly-dev
 				554D041F1734465400641704 /* Accelerate.framework */,
+				DFF4A3CD1763EB3C009F86E1 /* include */,
 				DFAD64CF16E26FA100B83426 /* src */,
 				DF04553C174304AF008C2243 /* yamcmc++_unit_tests */,
 				DFAD64CE16E26FA100B83426 /* Products */,
@@ -169,6 +191,8 @@
 		DFAD64CF16E26FA100B83426 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				DFA01B0E1763FB04000DDE61 /* boost_python_wrapper_full.cpp */,
+				DFA01B0F1763FB04000DDE61 /* boost_python_wrapper.cpp */,
 				DFAD64D216E26FA100B83426 /* yamcmc__.1 */,
 				DFAD64D916E2709300B83426 /* proposals.cpp */,
 				DFAD64DC16E270E500B83426 /* random.cpp */,
@@ -178,6 +202,37 @@
 			);
 			name = src;
 			path = "yamcmc++";
+			sourceTree = "<group>";
+		};
+		DFF4A3CD1763EB3C009F86E1 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				DFF4A3CE1763EB3C009F86E1 /* parameters.hpp */,
+				DFF4A3CF1763EB3C009F86E1 /* proposals.hpp */,
+				DFF4A3D01763EB3C009F86E1 /* random.hpp */,
+				DFF4A3D11763EB3C009F86E1 /* samplers.hpp */,
+				DFF4A3D21763EB3C009F86E1 /* steps.hpp */,
+			);
+			name = include;
+			path = "yamcmc++/include";
+			sourceTree = "<group>";
+		};
+		DFF4A3D31763EBF4009F86E1 /* lib */ = {
+			isa = PBXGroup;
+			children = (
+				DFF4A3D41763EBF4009F86E1 /* yamcmcpp */,
+			);
+			name = lib;
+			path = "yamcmc++/lib";
+			sourceTree = "<group>";
+		};
+		DFF4A3D41763EBF4009F86E1 /* yamcmcpp */ = {
+			isa = PBXGroup;
+			children = (
+				DFF4A3D51763EBF4009F86E1 /* __init__.py */,
+				DFF4A3D61763EBF4009F86E1 /* samplers.py */,
+			);
+			path = yamcmcpp;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -320,6 +375,7 @@
 				"HEADER_SEARCH_PATHS[arch=*]" = (
 					/usr/local/include,
 					/usr/include,
+					/Library/Frameworks/EPD64.framework/Versions/Current/include/python2.7,
 				);
 				"LIBRARY_SEARCH_PATHS[arch=*]" = (
 					/usr/local/lib,
@@ -342,6 +398,7 @@
 				"HEADER_SEARCH_PATHS[arch=*]" = (
 					/usr/local/include,
 					/usr/include,
+					/Library/Frameworks/EPD64.framework/Versions/Current/include/python2.7,
 				);
 				"LIBRARY_SEARCH_PATHS[arch=*]" = (
 					/usr/local/lib,
@@ -360,7 +417,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
-				"HEADER_SEARCH_PATHS[arch=*]" = /usr/local/include;
+				"HEADER_SEARCH_PATHS[arch=*]" = (
+					/usr/local/include,
+					"${HOME}/Xcode_projects/yamcmc++/yamcmc++",
+				);
 				"LIBRARY_SEARCH_PATHS[arch=*]" = /usr/local/lib;
 				"OTHER_LDFLAGS[arch=*]" = (
 					"-lboost_filesystem",
@@ -375,6 +435,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				"HEADER_SEARCH_PATHS[arch=*]" = (
+					/usr/local/include,
+					"${HOME}/Xcode_projects/yamcmc++/yamcmc++",
+				);
 				"OTHER_LDFLAGS[arch=*]" = (
 					"-lboost_filesystem",
 					"-larmadillo",
