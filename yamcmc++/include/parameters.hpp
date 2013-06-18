@@ -135,6 +135,8 @@ public:
     
     // Add a value to the set of MCMC samples
     void AddToSample(int current_iter) {
+        // TODO: Should be able to replace this with an iterator for efficiency, since we probably
+        // will always add values sequentially for MCMC samplers
         samples_[current_iter] = value_;
         logposts_[current_iter] = log_posterior_;
     }

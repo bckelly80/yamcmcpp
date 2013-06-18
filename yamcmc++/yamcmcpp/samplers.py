@@ -76,7 +76,7 @@ class MCMCSample(object):
         """
         acors = []
         for i in range(trace.shape[1]):
-            tau, mean, sigma = acor.acor(trace[:,i])
+            tau, mean, sigma = acor.acor(trace[:, i])
             acors.append(tau)
         return np.array(acors)
 
@@ -87,8 +87,8 @@ class MCMCSample(object):
         :param name: The name of the parameter to compute the effective number of independent samples for.
         """
         print "Calculating effective number of samples"
-        traces    = self._samples[name]  # Get the sampled parameter values
-        npts      = traces.shape[0]
+        traces = self._samples[name]  # Get the sampled parameter values
+        npts = traces.shape[0]
         timescale = self.autocorr_timescale(traces)
         return npts / timescale
 
@@ -103,7 +103,7 @@ class MCMCSample(object):
         """
         traces = self._samples[name]  # Get the sampled parameter values
         ntrace = traces.shape[1]
-        spN    = plt.subplot(ntrace, 1, ntrace)
+        spN = plt.subplot(ntrace, 1, ntrace)
         spN.plot(traces[:,-1], ".", markersize=2)
         spN.set_xlabel("Step")
         spN.set_ylabel("par %d" % (ntrace-1))
@@ -174,16 +174,16 @@ class MCMCSample(object):
         print "Plotting 2d PDF w KDE"
         trace1 = self._samples[name1][:,pindex1].real # JIC we get something imaginary?
         trace2 = self._samples[name2][:,pindex2].real
-        npts   = trace1.shape[0]
-        kde    = scipy.stats.gaussian_kde((trace1, trace2))
-        bins1  = np.linspace(trace1.min(), trace1.max(), nbins)
-        bins2  = np.linspace(trace2.min(), trace2.max(), nbins)
+        npts = trace1.shape[0]
+        kde = scipy.stats.gaussian_kde((trace1, trace2))
+        bins1 = np.linspace(trace1.min(), trace1.max(), nbins)
+        bins2 = np.linspace(trace2.min(), trace2.max(), nbins)
         mesh1, mesh2 = np.meshgrid(bins1, bins2)
-        hist   = kde([mesh1.ravel(), mesh2.ravel()]).reshape(mesh1.shape)
+        hist = kde([mesh1.ravel(), mesh2.ravel()]).reshape(mesh1.shape)
 
         clevels = []
         for frac in [0.9973, 0.9545, 0.6827]:
-            hfrac   = lambda level, hist=hist, frac=frac: hist[hist>=level].sum()/hist.sum() - frac
+            hfrac = lambda level, hist=hist, frac=frac: hist[hist>=level].sum()/hist.sum() - frac
             level = scipy.optimize.bisect(hfrac, hist.min(), hist.max())
             clevels.append(level)
 
@@ -208,9 +208,9 @@ class MCMCSample(object):
         # Also a note: this does not work if the outer contour is not
         # fully connected.
         if doPlotStragglers:
-            outer   = cont.collections[0]._paths
-            sx      = []
-            sy      = []
+            outer = cont.collections[0]._paths
+            sx = []
+            sy = []
             for i in range(npts):
                 found = [o.contains_point((trace1[i], trace2[i])) for o in outer]
                 if not (True in found):
