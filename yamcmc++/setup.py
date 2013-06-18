@@ -18,7 +18,6 @@ def configuration(parent_package='', top_path=None):
     
     config = Configuration("yamcmcpp", parent_package, top_path)
     config.version = extension_version
-    #config.add_subpackage("yamcmcpp")
     config.add_data_dir((".", "yamcmcpp"))
     config.add_installed_library(
         "yamcmcpp", 
