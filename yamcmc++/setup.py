@@ -23,13 +23,19 @@ def configuration(parent_package='', top_path=None):
         "yamcmcpp",
         sources=["proposals.cpp", "random.cpp", "samplers.cpp", "steps.cpp"],
         install_dir="../../")
-    config.add_extension(
-        "_yamcmcpp",
-        sources=["boost_python_wrapper.cpp", "samplers.cpp"],
-        include_dirs=include_dirs,
-        library_dirs=library_dirs,
-        libraries=["boost_python", "boost_filesystem", "boost_system", "armadillo", "yamcmcpp"]
-    )
+
+    # Currently there is nothing in the wrapper, do not build unless we add anything
+    # NOTE: we will also add the following to yamcmcpp/__init__.py
+    # from _yamcmcpp import *
+    if False:
+        config.add_extension(
+            "_yamcmcpp",
+            sources=["boost_python_wrapper.cpp", "samplers.cpp"],
+            include_dirs=include_dirs,
+            library_dirs=library_dirs,
+            libraries=["boost_python", "boost_filesystem", "boost_system", "armadillo", "yamcmcpp"]
+            )
+
     config.add_data_dir(("../../../../include", "include"))
     return config
 
