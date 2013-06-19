@@ -147,7 +147,7 @@ public:
     }
 
     // Return a copy of the MCMC samples
-    std::vector<ParValueType> GetLogLikes() {
+    std::vector<double> GetLogLikes() {
         return logposts_;
     }
     
