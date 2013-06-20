@@ -20,13 +20,13 @@ def configuration(parent_package='', top_path=None):
     config.version = extension_version
     #config.add_subpackage("yamcmcpp")
     config.add_data_dir((".", "yamcmcpp"))
-    # config.add_installed_library(
-    #     "yamcmcpp",
-    #     sources=["proposals.cpp", "random.cpp", "samplers.cpp", "steps.cpp"],
-    #     #include_dirs=include_dirs,
-    #     #library_dirs=library_dirs,
-    #     #libraries=["armadillo"],
-    #     install_dir="../../")
+    config.add_installed_library(
+         "yamcmcpp",
+         sources=["proposals.cpp", "random.cpp", "samplers.cpp", "steps.cpp"],
+         #include_dirs=include_dirs,
+         #library_dirs=library_dirs,
+         #libraries=["armadillo"],
+         install_dir="../../")
     # config.add_extension(
     #     "_yamcmcpp",
     #     sources=["boost_python_wrapper.cpp", "samplers.cpp"],
