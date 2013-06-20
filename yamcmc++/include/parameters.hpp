@@ -130,6 +130,7 @@ public:
     // Set the size of the vector containing the MCMC samples
     void SetSampleSize(int sample_size) {
         samples_.resize(sample_size);
+        logposts_.resize(sample_size);
     }
     
     // Add a value to the set of MCMC samples
@@ -137,16 +138,23 @@ public:
         // TODO: Should be able to replace this with an iterator for efficiency, since we probably
         // will always add values sequentially for MCMC samplers
         samples_[current_iter] = value_;
+        logposts_[current_iter] = log_posterior_;
     }
     
     // Return a copy of the MCMC samples
     std::vector<ParValueType> GetSamples() {
         return samples_;
     }
+
+    // Return a copy of the MCMC samples
+    std::vector<double> GetLogLikes() {
+        return logposts_;
+    }
     
 protected:
     ParValueType value_; // The current value of the parameter
     std::vector<ParValueType> samples_; // Vector containing the MCMC samples
+    std::vector<double> logposts_; // Vector containing the posterior likelihoods
 };
 
 // This is the Ensemble class. It is basically a class
