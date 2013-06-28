@@ -147,6 +147,17 @@ public:
     }
 
     // Return a copy of the MCMC samples
+    std::vector<std::vector<double> > getSamples() {
+        int nx = samples_.size();
+        int ny = samples_[0].n_elem;
+        std::vector<std::vector<double> > samples(nx,std::vector<double>(ny));
+        for (int i = 0; i < nx; i++) {
+            samples[i] = arma::conv_to<std::vector<double> >::from(samples_[i]);
+        }
+        return samples;
+    }
+
+    // Return a copy of the MCMC samples
     std::vector<double> GetLogLikes() {
         return logposts_;
     }
