@@ -10,7 +10,7 @@
 
 #define CATCH_CONFIG_MAIN
 #include <catch.hpp>
-#include "include/samplers.hpp"
+#include "samplers.hpp"
 #include <boost/lexical_cast.hpp>
 
 // Externally-defined random number generator object, instantiated in random.cpp
