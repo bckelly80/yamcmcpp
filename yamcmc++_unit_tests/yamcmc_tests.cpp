@@ -443,22 +443,22 @@ TEST_CASE("steps/rank1_cholesky_update", "Test the rank-1 Cholesky update and do
     CholUpdateR1(Ldown, v, true);
     
     // Make sure the cholesky factors from the two methods agree.
-    double max_frac_diff = 100.0;
+    double max_frac_diff = 0.0;
     for (int i=0; i<Lup.n_rows; i++) {
         // Cholesky factor is upper triangular, so only loop over upper triangle
         for (int j=i; j<Lup.n_cols; j++) {
             double frac_diff = abs((Lup(i,j) - Lup0(i,j)) / Lup0(i,j));
-            max_frac_diff = std::min(frac_diff, max_frac_diff);
+            max_frac_diff = std::max(frac_diff, max_frac_diff);
         }
     }
     REQUIRE(max_frac_diff < 1e-8);
     
-    max_frac_diff = 100.0;
+    max_frac_diff = 0.0;
     for (int i=0; i<Ldown.n_rows; i++) {
         // Cholesky factor is upper triangular, so only loop over upper triangle
         for (int j=i; j<Ldown.n_cols; j++) {
             double frac_diff = abs((Ldown(i,j) - Ldown0(i,j)) / Ldown0(i,j));
-            max_frac_diff = std::min(frac_diff, max_frac_diff);
+            max_frac_diff = std::max(frac_diff, max_frac_diff);
         }
     }
     REQUIRE(max_frac_diff < 1e-8);
