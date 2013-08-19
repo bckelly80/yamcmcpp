@@ -32,6 +32,7 @@ extern RandomGenerator RandGen;
 class BaseParameter {
 public:
     // Constructor
+    BaseParameter() {}
     BaseParameter(bool track, std::string label, double temperature=1.0) :
     track_(track), label_(label), temperature_(temperature) {}
     
@@ -96,6 +97,7 @@ template<class ParValueType>
 class Parameter : public BaseParameter {
 public:
     // Constructor
+    Parameter() {}
     Parameter(bool track, std::string label, double temperature=1.0) :
     BaseParameter(track, label, temperature) {}
     
