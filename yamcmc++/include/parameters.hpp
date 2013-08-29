@@ -143,6 +143,12 @@ public:
         logposts_[current_iter] = log_posterior_;
     }
     
+    // Add a value and its log-posterior to the MCMC samples
+    void AddToSample(int current_iter, ParValueType value, double logpost) {
+        samples_[current_iter] = value;
+        logposts_[current_iter] = logpost;
+    }
+    
     // Return a copy of the MCMC samples
     std::vector<ParValueType> GetSamples() {
         return samples_;

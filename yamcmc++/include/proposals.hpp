@@ -233,7 +233,9 @@ public:
 		arma::vec current_value = this->ensemble_[this->parameter_index_].Value();
 		
 		// Does the proposed parameter value = current parameter value?
-		arma::uvec equal_vector = (current_value == new_value);
+        arma::vec etol(new_value.n_elem);
+        etol.fill(1e-10);
+		arma::uvec equal_vector = (arma::abs(current_value - new_value) < etol);
 		
 		if (arma::sum(equal_vector) == equal_vector.size()) {
 			// We are calculating the density of the proposed -> current transition kernel,

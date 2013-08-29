@@ -319,10 +319,12 @@
 					/usr/local/include,
 					/usr/include,
 					/Library/Frameworks/EPD64.framework/Versions/Current/include/python2.7,
+					"${HOME}/include",
 				);
 				"LIBRARY_SEARCH_PATHS[arch=*]" = (
 					/usr/local/lib,
 					/usr/lib,
+					"${HOME}/lib",
 				);
 				"OTHER_LDFLAGS[arch=*]" = (
 					"-lboost_system",
@@ -365,8 +367,12 @@
 				"HEADER_SEARCH_PATHS[arch=*]" = (
 					/usr/local/include,
 					"${HOME}/Xcode_projects/yamcmc++/yamcmc++",
+					"${HOME}/include",
 				);
-				"LIBRARY_SEARCH_PATHS[arch=*]" = /usr/local/lib;
+				"LIBRARY_SEARCH_PATHS[arch=*]" = (
+					/usr/local/lib,
+					"${HOME}/lib",
+				);
 				"OTHER_LDFLAGS[arch=*]" = (
 					"-lboost_filesystem",
 					"-larmadillo",

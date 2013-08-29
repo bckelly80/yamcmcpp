@@ -842,6 +842,218 @@ TEST_CASE("samplers/RAM_exchange_bivariate_sampler", "Test the MCMC sampler for 
     REQUIRE(zsqr < 9.21);
 }
 
+TEST_CASE("samplers/DiffEvol_bivariate_sampler", "Test the MCMC sampler for a bivariate normal model using the affine invariant  algorithm.")
+{
+    arma::mat covar(2,2);
+    covar << 2.3 << -0.6 << arma::endr << -0.6 << 0.8 << arma::endr;
+    arma::vec mu0(2);
+    mu0 << 4.5 << -9.0;
+    
+    // Generate some data
+    unsigned int ndata = 1000;
+    arma::mat data(ndata,2);
+    for (int i=0; i<ndata; i++) {
+        data.row(i) = arma::trans(mu0 + RandGen.normal(covar));
+    }
+    
+    arma::vec prior_mean(2);
+    prior_mean << 0.0 << 0.0;
+    arma::mat prior_var(2,2);
+    prior_var << 100.0 << 0.0 << arma::endr << 0.0 << 100.0 << arma::endr;
+
+    // create parameter ensemble
+    unsigned int nwalkers = 20;
+    Ensemble<BiMu> MuEnsemble;
+    
+    for (int j=0; j<nwalkers; j++) {
+        // Add parameters to the ensemble
+        std::string pname("Walker ");
+        pname.append(std::to_string(j+1));
+        MuEnsemble.AddObject(new BiMu(true, pname, covar, data));
+        MuEnsemble[j].SetPrior(prior_mean, prior_var);
+    }
+    
+    StretchProposal<BiMu> MuStretch(MuEnsemble, 0);
+    
+    // setup MCMC parameters
+    int sample_size = 100000;
+    int nthin = 1;
+    int burnin = 10000;
+    int report_iter = sample_size + burnin;
+    
+    // Instantiate MCMC sampler object
+    Sampler normal_model(sample_size, burnin, nthin);
+    
+    for (int j=0; j<nwalkers; j++) {
+        // Add Metropolis-Hastings steps with stretch proposals
+        StretchProposal<BiMu> MuStretch(MuEnsemble, j);
+        normal_model.AddStep(new MetropStep<arma::vec>(MuEnsemble[j], MuStretch, report_iter));
+    }
+
+    // Make sure the parameters are tracked
+    std::set<std::string> tracked_names = normal_model.GetTrackedNames();
+    std::set<std::string>::iterator mu_it;
+    mu_it = tracked_names.find(MuEnsemble[2].Label());
+    REQUIRE(mu_it != tracked_names.end());
+    
+    // Make sure the map of pointers to the parameter objects points to the correct object
+    std::map<std::string, BaseParameter*> p_tracked_params = normal_model.GetTrackedParams();
+    REQUIRE(p_tracked_params.size() == nwalkers);
+    std::map<std::string, BaseParameter*>::iterator mu_it2 = p_tracked_params.find(MuEnsemble[nwalkers-2].Label());
+    REQUIRE(mu_it2 != p_tracked_params.end());
+    REQUIRE(p_tracked_params[MuEnsemble[3].Label()]->Label() == "Walker 4");
+    REQUIRE(p_tracked_params[MuEnsemble[5].Label()]->GetTemperature() == 1.0);
+    
+    // Run the sampler
+    normal_model.Run();
+        
+    // Grab the sampled parameter values and organize them into one parameter object
+    BiMu NormalMean(true, "Mu", covar, data);
+    sample_size = MuEnsemble[0].GetSamples().size();
+    NormalMean.SetSampleSize(nwalkers * sample_size);
+    int sample_index = 0;
+    for (int j=0; j<nwalkers; j++) {
+        std::vector<arma::vec> samplej = MuEnsemble[j].GetSamples();
+        std::vector<double> logpostj = MuEnsemble[j].GetLogLikes();
+        for (int i=0; i<samplej.size(); i++) {
+            NormalMean.AddToSample(sample_index, samplej[i], logpostj[i]);
+            sample_index++;
+        }
+    }
+    
+    // now grab the samples from the parameter object
+    std::vector<arma::vec> samples0 = NormalMean.GetSamples();
+    sample_size = samples0.size();
+    
+    // convert to armadillo library vector
+    arma::vec mu1_samples(sample_size);
+    arma::vec mu2_samples(sample_size);
+    for (int i=0; i<sample_size; i++) {
+        arma::vec arma_sample = samples0[i];
+        mu1_samples(i) = arma_sample(0);
+        mu2_samples(i) = arma_sample(1);
+    }
+    
+    arma::vec post_mean(2);
+    post_mean(0) = arma::mean(mu1_samples);
+    post_mean(1) = arma::mean(mu2_samples);
+    
+    arma::mat post_covar(2,2);
+    post_covar(0,0) = arma::var(mu1_samples);
+    post_covar(1,1) = arma::var(mu2_samples);
+    post_covar(0,1) = arma::as_scalar(arma::cov(mu1_samples, mu2_samples));
+    post_covar(1,0) = post_covar(0,1);
+    
+    // make sure true values are contained within 99% credibility region
+    arma::vec mu_centered = post_mean - mu0;
+    double zsqr = arma::as_scalar(mu_centered.t() * arma::inv(post_covar) * mu_centered);
+    REQUIRE(zsqr < 9.21);
+}
+
+TEST_CASE("samplers/diff_evol_exchange_bivariate_sampler", "Test the MCMC sampler for a bivariate normal model using the Robust Adaptive Metropolis algorithm and Parallel tempering.")
+{
+    arma::mat covar(2,2);
+    covar << 2.3 << -0.6 << arma::endr << -0.6 << 0.8 << arma::endr;
+    arma::vec mu0(2);
+    mu0 << 4.5 << -9.0;
+    
+    // Generate some data
+    unsigned int ndata = 1000;
+    arma::mat data(ndata,2);
+    for (int i=0; i<ndata; i++) {
+        data.row(i) = arma::trans(mu0 + RandGen.normal(covar));
+    }
+    
+    arma::vec prior_mean(2);
+    prior_mean << 0.0 << 0.0;
+    arma::mat prior_var(2,2);
+    prior_var << 100.0 << 0.0 << arma::endr << 0.0 << 100.0 << arma::endr;
+    
+    // create parameter ensemble
+    unsigned int nwalkers = 20;
+    Ensemble<BiMu> MuEnsemble;
+    double max_temperature = 100.0;
+    arma::vec temp_ladder = arma::linspace<arma::vec>(0.0, log(max_temperature), nwalkers);
+    temp_ladder = arma::exp(temp_ladder);
+    
+    for (int j=0; j<nwalkers; j++) {
+        // Add parameters to the ensemble
+        std::string pname("Walker ");
+        pname.append(std::to_string(j+1));
+        MuEnsemble.AddObject(new BiMu(false, pname, covar, data, temp_ladder(j)));
+        MuEnsemble[j].SetPrior(prior_mean, prior_var);
+    }
+    
+    // setup MCMC parameters
+    int sample_size = 100000;
+    int nthin = 1;
+    int burnin = 10000;
+    int report_iter = sample_size + burnin;
+    
+    // Instantiate MCMC sampler object
+    Sampler normal_model(sample_size, burnin, nthin);
+    
+    // Add the steps to the sampler, starting with the hottest chain first
+    for (int j=nwalkers-1; j>0; j--) {
+        // First add the stretch update
+        StretchProposal<BiMu> MuStretch(MuEnsemble, j);
+        normal_model.AddStep( new MetropStep<arma::vec>(MuEnsemble[j], MuStretch, report_iter) );
+        // Now add Exchange steps
+        normal_model.AddStep( new ExchangeStep<arma::vec, BiMu>(MuEnsemble[j], j, MuEnsemble, report_iter) );
+    }
+    
+    // Make sure we set this parameter in the coolest chain (the one corresponding to the posterior) to be tracked
+    MuEnsemble[0].SetTracking(true);
+    // Add in coolest chain. This is the chain that is actually moving in the posterior.
+    StretchProposal<BiMu> MuStretch(MuEnsemble, 0);
+    normal_model.AddStep( new MetropStep<arma::vec>(MuEnsemble[0], MuStretch, report_iter) );
+    
+    // Make sure the parameter named "Walker 1" is tracked)
+    std::set<std::string> tracked_names = normal_model.GetTrackedNames();
+    REQUIRE(tracked_names.size() == 1);
+    std::set<std::string>::iterator mu_it;
+    mu_it = tracked_names.find(MuEnsemble[0].Label());
+    REQUIRE(mu_it != tracked_names.end());
+    REQUIRE(*mu_it == "Walker 1");
+    
+    // Make sure the map of pointers to the parameter objects points to the correct object
+    std::map<std::string, BaseParameter*> p_tracked_params = normal_model.GetTrackedParams();
+    REQUIRE(p_tracked_params.size() == 1);
+    std::map<std::string, BaseParameter*>::iterator mu_it2 = p_tracked_params.find(MuEnsemble[0].Label());
+    REQUIRE(mu_it2 != p_tracked_params.end());
+    REQUIRE(p_tracked_params[MuEnsemble[0].Label()]->Label() == "Walker 1");
+    REQUIRE(p_tracked_params[MuEnsemble[0].Label()]->GetTemperature() == 1.0);
+    
+    // Run the sampler
+    normal_model.Run();
+    
+    // Grab the sampled parameter values
+    std::vector<arma::vec> samples0 = MuEnsemble[0].GetSamples();
+    
+    // convert to armadillo library vector
+    arma::vec mu1_samples(sample_size);
+    arma::vec mu2_samples(sample_size);
+    for (int i=0; i<sample_size; i++) {
+        mu1_samples[i] = samples0[i](0);
+        mu2_samples[i] = samples0[i](1);
+    }
+    
+    arma::vec post_mean(2);
+    post_mean(0) = arma::mean(mu1_samples);
+    post_mean(1) = arma::mean(mu2_samples);
+    
+    arma::mat post_covar(2,2);
+    post_covar(0,0) = arma::var(mu1_samples);
+    post_covar(1,1) = arma::var(mu2_samples);
+    post_covar(0,1) = arma::as_scalar(arma::cov(mu1_samples, mu2_samples));
+    post_covar(1,0) = post_covar(0,1);
+    
+    // make sure true values are contained within 99% credibility region
+    arma::vec mu_centered = post_mean - mu0;
+    double zsqr = arma::as_scalar(mu_centered.t() * arma::inv(post_covar) * mu_centered);
+    REQUIRE(zsqr < 9.21);
+}
+
 // Define class for univariate normal mean parameter
 class NormalMean : public Parameter<double> {
 public:
