@@ -87,7 +87,7 @@ public:
 	void DoStep() {
 		parameter_.Save(parameter_.RandomPosterior());
 	}
-	
+
 	void Start() {
 		parameter_.Save(parameter_.StartingValue());
 	}
