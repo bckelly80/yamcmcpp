@@ -28,7 +28,12 @@ def configuration(parent_package='', top_path=None):
     compiler_args = ["-O3"]
     if system_name == 'Darwin':
         # need to build against libc++ for Mac OS X
+        compiler_args.append("-std=c++11")
         compiler_args.append("-stdlib=libc++")
+        compiler_args.append("-dynamiclib")
+        compiler_args.append("-lboost_filesystem")
+        compiler_args.append("-lboost_system")
+        compiler_args.append("-larmadillo")
 
     config.add_installed_library("yamcmcpp",
                                  sources=["proposals.cpp", "random.cpp", "samplers.cpp", "steps.cpp"],
