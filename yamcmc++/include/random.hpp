@@ -58,6 +58,7 @@ public:
     double gamma(double alpha=1.0, double beta=1.0);
     double invgamma(double alpha=1.0, double beta=1.0);
     int uniform_integer(int lowbound, int upbound);
+    double invgauss(double mu, double lambda);
     // Additional methods to be added later
     arma::vec mtdist(arma::mat covar, double dof=1.0);
     double beta();

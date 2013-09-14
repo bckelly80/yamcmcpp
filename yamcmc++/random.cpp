@@ -209,6 +209,24 @@ double RandomGenerator::invgamma(double alpha, double beta)
 	return 1.0 / gamma_(rng);
 }
 
+// Method to return a random variate drawn from an inverse gaussian distribution with
+// mean parameter mu and shape parameter lambda:
+//
+// p(x|mu,lambda) \propto (lambda / x^3)^{1/2} * exp{-0.5 * lambda * (x-mu)^2 / (mu^2 * x)}
+double RandomGenerator::invgauss(double mu, double lambda) {
+    double snorm = normal(0.0, 1.0);
+    double snorm_sqr = snorm * snorm;
+    double mu_sqr = mu * mu;
+    
+    double x = mu + mu_sqr * snorm_sqr / (2.0 * lambda) -
+        mu / (2.0 * lambda) * sqrt(4.0 * mu * lambda * snorm_sqr + mu_sqr * snorm_sqr);
+    
+    double unif = uniform(0.0, 1.0);
+    
+    double value = unif <= mu / (mu + x) ? x : mu_sqr / x;
+    return value;
+}
+
 // Method to return a random vector drawn from a multivariate Student's t-distribution.
 // More to come later.
 arma::vec RandomGenerator::mtdist(arma::mat covar, double dof)
