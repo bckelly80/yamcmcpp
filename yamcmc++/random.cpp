@@ -219,11 +219,17 @@ double RandomGenerator::invgauss(double mu, double lambda) {
     double mu_sqr = mu * mu;
     
     double x = mu + mu_sqr * snorm_sqr / (2.0 * lambda) -
-        mu / (2.0 * lambda) * sqrt(4.0 * mu * lambda * snorm_sqr + mu_sqr * snorm_sqr);
+        mu / (2.0 * lambda) * sqrt(4.0 * mu * lambda * snorm_sqr + mu_sqr * snorm_sqr * snorm_sqr);
     
     double unif = uniform(0.0, 1.0);
     
-    double value = unif <= mu / (mu + x) ? x : mu_sqr / x;
+    double value;
+    if (unif <= mu / (mu + x)) {
+        value = x;
+    } else {
+        value = mu_sqr / x;
+    }
+    
     return value;
 }
 
