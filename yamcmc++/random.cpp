@@ -88,7 +88,7 @@ double RandomGenerator::normal(double mu, double sigma)
 arma::vec RandomGenerator::normal(arma::mat covar)
 {
 	// Get matrix square root of covar via Cholesky decomposition
-	arma::mat R = arma::chol(covar);
+	arma::mat R = arma::chol(covar); // R is upper triangular
 	
 	// Rest normal distribution parameters
 	boost::random::normal_distribution<>::param_type normal_params(0.0, 1.0);
