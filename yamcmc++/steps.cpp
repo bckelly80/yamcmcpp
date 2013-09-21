@@ -37,7 +37,7 @@ bool AdaptiveMetro::Accept(arma::vec new_value, arma::vec old_value) {
 	
 	// MH accept/reject criteria: Proposal must be symmetric!!
 	alpha_ = (parameter_.LogDensity(new_value) - parameter_.LogDensity(old_value)) / parameter_.GetTemperature();
-    
+
 	if (!arma::is_finite(alpha_)) {
 		// New value of the log-posterior is not finite, so reject this
 		// proposal
