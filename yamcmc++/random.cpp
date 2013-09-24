@@ -233,6 +233,25 @@ double RandomGenerator::invgauss(double mu, double lambda) {
     return value;
 }
 
+// Method to return a random matrix drawn from a Wishart distribution.
+arma::mat RandomGenerator::wishart(int dof, arma::mat scale)
+{
+    arma::mat W(scale.n_cols, scale.n_cols);
+    W.zeros();
+    for (int i=0; i<dof; i++) {
+        arma::vec x = normal(scale);
+        W += x * x.t();
+    }
+    return W;
+}
+
+// Method to return a random matrix drawn from an inverse-Wishart distribution
+arma::mat RandomGenerator::inv_wishart(int dof, arma::mat scale)
+{
+    arma::mat W_inv = wishart(dof, scale.i());
+    return W_inv.i();
+}
+
 // Method to return a random vector drawn from a multivariate Student's t-distribution.
 // More to come later.
 arma::vec RandomGenerator::mtdist(arma::mat covar, double dof)
