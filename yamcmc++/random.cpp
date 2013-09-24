@@ -248,8 +248,8 @@ arma::mat RandomGenerator::wishart(int dof, arma::mat scale)
 // Method to return a random matrix drawn from an inverse-Wishart distribution
 arma::mat RandomGenerator::inv_wishart(int dof, arma::mat scale)
 {
-    arma::mat W_inv = wishart(dof, scale.i());
-    return W_inv.i();
+    arma::mat W_inv = wishart(dof, arma::inv(arma::sympd(scale)));
+    return arma::inv(arma::sympd(W_inv));
 }
 
 // Method to return a random vector drawn from a multivariate Student's t-distribution.

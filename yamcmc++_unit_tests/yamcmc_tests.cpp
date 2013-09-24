@@ -173,6 +173,50 @@ TEST_CASE("parameters/normal_mean", "Test the parameter class for a normal mean.
     REQUIRE(fracdiff < 1e-6);
 }
 
+// Test wishart and inverse-wishart RNG
+TEST_CASE("random/wishart", "Test the wishart and inverse-wishart RNGs.") {
+    std::cout << "testing wishart RNG..." << std::endl;
+    arma::mat corr(3,3);
+    corr << 1.0 << 0.3 << -0.5 << arma::endr
+    << 0.3 << 1.0 << 0.54 << arma::endr
+    << -0.5 << 0.54 << 1.0;
+    
+    arma::mat sigma(3,3);
+    sigma << 2.3 << 0.0 << 0.0 << arma::endr
+    << 0.0 << 0.45 << 0.0 << arma::endr
+    << 0.0 << 0.0 << 13.4;
+    
+    arma::mat covar = sigma * corr * sigma;
+    
+    int nsamples = 100000;
+    arma::vec ones(3);
+    ones.ones();
+    
+    int dof = 10;
+    arma::vec chisqr(nsamples);
+    double xnorm = arma::as_scalar(ones.t() * covar * ones);
+    for (int i=0; i<nsamples; i++) {
+        arma::mat Xmat = RandGen.wishart(dof, covar);
+        double xx = arma::as_scalar(ones.t() * Xmat * ones);
+        chisqr(i) = xx / xnorm;
+    }
+
+    double zscore = std::abs(arma::mean(chisqr) - dof) / sqrt(2.0 * dof / nsamples);
+    REQUIRE(zscore < 3.0);
+    double frac_diff = std::abs(arma::stddev(chisqr) - sqrt(2 * dof)) / sqrt(2.0 * dof);
+    REQUIRE(frac_diff < 0.02);
+    
+    arma::mat covar_avg(3,3);
+    covar_avg.zeros();
+    for (int i=0; i<nsamples; i++) {
+        arma::mat this_covar = RandGen.inv_wishart(dof, covar);
+        covar_avg += this_covar / nsamples;
+    }
+    arma::mat true_avg = covar / (dof - covar.n_cols - 1);
+    arma::mat frac_diff_mat = arma::abs( (true_avg - covar_avg) / true_avg );
+    REQUIRE(arma::all(arma::vectorise(frac_diff_mat) < 0.02));
+}
+
 /*******************************************************************************
  *                                                                             *
  *                      TESTS FOR PROPOSAL CLASSES                             *
