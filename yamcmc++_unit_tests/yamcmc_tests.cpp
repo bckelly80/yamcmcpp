@@ -1254,3 +1254,47 @@ TEST_CASE("samplers/gibbs_sampler", "Test the Gibbs sampler for a normal model."
     zscore = std::abs(var_post_mean - sigma0 * sigma0) / sqrt(var_post_var);
     REQUIRE(zscore < 3.0);
 }
+
+TEST_CASE("samplers/marginal_gibbs_sampler", "Make sure we only track one of the two parameters.") {
+
+    double sigma0 = 2.3;
+    double mu0 = 6.7;
+    double prior_mu = -1.0;
+    double prior_var = 10.0;
+    double prior_dof = 10.0;
+    double prior_ssqr = 10.0;
+    
+    // Generate some data
+    unsigned int ndata = 1000;
+    arma::vec data(ndata);
+    data.randn();
+    data *= sigma0;
+    data += mu0;
+    
+    // setup MCMC options
+    int sample_size = 100000;
+    int burnin = 10000;
+    Sampler normal_model(sample_size, burnin);
+    
+    // Instantiate MCMC objects needed for MCMC Sampler
+    NormalMean Mu(true, "mu", data);
+    NormalVar SigSqr(false, "sigsqr", data);
+    Mu.SetPrior(prior_mu, prior_var);
+    Mu.SetNormVar(&SigSqr);
+    SigSqr.SetPrior(prior_dof, prior_ssqr);
+    SigSqr.SetNormMean(&Mu);
+    
+    // Add the Gibbs steps to the MCMC sampler
+    normal_model.AddStep(new GibbsStep<double>(Mu));
+    normal_model.AddStep(new GibbsStep<double>(SigSqr));
+    
+    // Make sure only the parameters named "mu" is tracked
+    std::set<std::string> tracked_names = normal_model.GetTrackedNames();
+    REQUIRE(tracked_names.size() == 1);
+    std::set<std::string>::iterator parameter_it;
+    parameter_it = tracked_names.find(Mu.Label());
+    REQUIRE(parameter_it != tracked_names.end());
+    REQUIRE(*parameter_it == Mu.Label());
+    parameter_it = tracked_names.find(SigSqr.Label());
+    REQUIRE(parameter_it == tracked_names.end());
+}

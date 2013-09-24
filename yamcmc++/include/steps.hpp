@@ -96,7 +96,10 @@ public:
 	std::string ParameterLabel() {
 		return parameter_.Label();
 	}
-	
+    // Should return the tracking status of the parameter associated with this step instance.
+	virtual bool ParameterTrack() {
+		return parameter_.Track();
+	}
 	// Return string representation of parameter value
 	std::string ParameterValue() {
 		return parameter_.StringValue();
