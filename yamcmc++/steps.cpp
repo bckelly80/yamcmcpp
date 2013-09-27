@@ -106,6 +106,73 @@ void AdaptiveMetro::DoStep()
 	}
 }
 
+// Constructor, requires a parameter object, a proposal object, an initial
+// covariance matrix for the multivariate proposals, a target acceptance rate,
+// and the maximum number of iterations to perform the adaptations for.
+UniAdaptiveMetro::UniAdaptiveMetro(Parameter<double>& parameter, Proposal<double>& proposal,
+                                   double ivar, double target_rate, int maxiter) :
+parameter_(parameter), proposal_(proposal),
+target_rate_(target_rate), maxiter_(maxiter)
+{
+	gamma_ = 2.0 / 3.0;
+	niter_ = 0;
+	naccept_ = 0;
+}
+
+// Method to calculate whether the proposal is accepted
+bool UniAdaptiveMetro::Accept(double new_value, double old_value) {
+	
+	// MH accept/reject criteria: Proposal must be symmetric!!
+	alpha_ = (parameter_.LogDensity(new_value) - parameter_.LogDensity(old_value)) / parameter_.GetTemperature();
+    
+	if (!arma::is_finite(alpha_)) {
+		// New value of the log-posterior is not finite, so reject this
+		// proposal
+        alpha_ = 0.0;
+		return false;
+	}
+	
+	double unif = uniform_(rng);
+	alpha_ = std::min(exp(alpha_), 1.0);
+	if (unif < alpha_) {
+		naccept_++;
+		return true;
+	} else {
+		return false;
+	}
+}
+
+// Method to perform the RAM step. This involves a standard Metropolis-Hastings update, followed
+// by an update to the proposal scale matrix so long as niter < maxiter
+void UniAdaptiveMetro::DoStep()
+{
+	double old_value = parameter_.Value();
+    
+	// Unscaled proposal
+	double unit_proposal = proposal_.Draw(0.0);
+	
+	// Scaled proposal vector
+	double scaled_proposal = prop_scale_ * unit_proposal;
+	double new_value = old_value + scaled_proposal;
+	
+	// MH accept/reject criteria
+	if (Accept(new_value, old_value)) {
+		parameter_.Save(new_value);
+	}
+    
+	if ((niter_ < maxiter_) && arma::is_finite(alpha_)) {
+        double step_size = std::min(1.0, 1.0 / pow(niter_, gamma_));
+        prop_scale_ *= sqrt(1.0 + step_size * (alpha_ - target_rate_));
+	}
+    
+	niter_++;
+	
+	if (niter_ == maxiter_) {
+		double arate = ((double)(naccept_)) / ((double)(niter_));
+		std::cout << "Average RAM Acceptance Rate is " << arate << std::endl;
+	}
+}
+
 // Function to perform the rank-1 Cholesky update, needed for updating the
 // proposal covariance matrix
 void CholUpdateR1(arma::mat& L, arma::vec& v, bool downdate)

@@ -305,6 +305,77 @@ private:
 	double alpha_; // Acceptance probability
 };
 
+class UniAdaptiveMetro : public Step
+{
+public:
+	// Constructor
+	UniAdaptiveMetro(Parameter<double>& parameter, Proposal<double>& proposal,
+                     double ivar, double target_rate, int maxiter);
+    
+	void Start() {
+		parameter_.Save(parameter_.StartingValue());
+	}
+	
+	std::string ParameterLabel() {
+		return parameter_.Label();
+	}
+	
+	std::string ParameterValue() {
+		return parameter_.StringValue();
+	}
+	
+	// Method to set the target acceptance rate
+	void SetTargetRate(double target_rate) {
+		target_rate_ = target_rate;
+	}
+	
+	// Method to set the rate at which the step size sequence decays.
+	void SetDecayRate(double gamma) {
+		gamma_ = gamma;
+	}
+	
+	// Method to determine whether a proposal is accepted
+	bool Accept(double new_value, double old_value);
+	
+	// Method to perform the RAM step.
+	void DoStep();
+    
+    // Return the current value of the Metropolis-Hastings ratio
+    double GetMetroRatio() {
+        return alpha_;
+    }
+    
+    // Return the average acceptance rate thus far.
+    double GetAcceptRate() {
+        double arate = ((double)(naccept_)) / ((double)(niter_));
+        return arate;
+    }
+    
+    // Return if parameter is tracked.
+    bool ParameterTrack() {
+        return parameter_.Track();
+    }
+    
+    // Return a pointer to the parameter
+    BaseParameter* GetParPointer() {
+        return &parameter_;
+    }
+	
+private:
+	/// References to parameter and proposal associated with step instance.
+	Parameter<double>& parameter_;
+	Proposal<double>& proposal_;
+	boost::random::uniform_real_distribution<> uniform_;
+	double prop_scale_; // proposal scale
+	double gamma_; // Rate of decay for step size update
+	double target_rate_; // Target acceptance rate
+	int niter_; // Number of iterations performed
+	int naccept_; // Number of MHA proposals accepted
+	int maxiter_; // Maximum number of iterations to update proposal scale matrix
+	double alpha_; // Acceptance probability
+};
+
+
 // Class performing the exchange step used in Parallel Tempering
 template <class ParValueType, class ParameterType>
 class ExchangeStep : public Step
