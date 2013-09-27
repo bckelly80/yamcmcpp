@@ -117,6 +117,7 @@ target_rate_(target_rate), maxiter_(maxiter)
 	gamma_ = 2.0 / 3.0;
 	niter_ = 0;
 	naccept_ = 0;
+    prop_scale_ = sqrt(ivar);
 }
 
 // Method to calculate whether the proposal is accepted
@@ -169,7 +170,7 @@ void UniAdaptiveMetro::DoStep()
 	
 	if (niter_ == maxiter_) {
 		double arate = ((double)(naccept_)) / ((double)(niter_));
-		std::cout << "Average RAM Acceptance Rate is " << arate << std::endl;
+		std::cout << "Average Univariate RAM Acceptance Rate is " << arate << std::endl;
 	}
 }
 

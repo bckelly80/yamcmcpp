@@ -579,6 +579,48 @@ TEST_CASE("steps/adaptive_mha", "Test the Robust Adaptive Metropolis step class"
     REQUIRE(subopt_fact < 1.01); // make sure sub-optimality factor is within 1% of theoretical value
 }
 
+TEST_CASE("steps/uniadaptive_mha", "Test the Univariate Robust Adaptive Metropolis step class") {
+    
+    double mu0 = 4.5;
+    double var0 = 2.3;
+    
+    // Generate some data
+    unsigned int ndata = 1000;
+    arma::vec data = mu0 + sqrt(var0) * arma::randn(ndata);
+    
+    Mu NormMean(true, "mu", sqrt(var0), data);
+    
+    double prior_mean = 8.0;
+    double prior_var = 8.0;
+    
+    NormMean.SetPrior(prior_mean, prior_var);
+    
+    NormalProposal UnitProp(1.0);
+    
+    double target_rate = 0.4;
+    double prop_var = 1.0;
+    int niter = 100000;
+    int maxiter = niter + 1;
+    UniAdaptiveMetro RAM(NormMean, UnitProp, prop_var, target_rate, niter);
+    RAM.Start();
+    
+    // Make sure we always accept proposed values that are the same as the current values
+    double new_value = NormMean.Value();
+    bool accepted = RAM.Accept(new_value, NormMean.Value());
+    REQUIRE(accepted);
+    double MH_ratio = RAM.GetMetroRatio();
+    REQUIRE(abs(MH_ratio - 1.0) < 1e-8); // Make sure MH ratio is unity when using the same value
+    
+    // Make sure we achieve the requested acceptance rate
+    for (int i=0; i<niter; i++) {
+        RAM.DoStep();
+    }
+    double arate = RAM.GetAcceptRate();
+    double frac_diff = std::abs(arate - target_rate) / target_rate;
+    REQUIRE(frac_diff < 0.02); // Make sure acceptance rate is within 2% of target
+}
+
+
 TEST_CASE("steps/exchange", "Test the exchange step from parallel tempering.") {
     double sigma = 2.3;
     double mu0 = 6.7;    
